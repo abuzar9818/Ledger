@@ -5,7 +5,7 @@ async function userRegisterController(req,res){
 
     const isExist= await userModel.findOne({email});
     if(isExist){
-        return res.status(400).json({message:"Email already exists"});
+        return res.status(400).json({message:"Email already exists",status:"failed"});
     }
 }
 
