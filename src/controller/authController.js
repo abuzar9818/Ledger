@@ -1,5 +1,6 @@
 const userModel=require('../models/userModel');
 const jwt=require('jsonwebtoken');
+const emailService=require('../services/emailService');
 
 //user registration controller
 // Post api/auth/register
@@ -24,6 +25,9 @@ async function userRegisterController(req,res){
         message:"User registered successfully",
         status:"success",
         token});
+
+    // Send registration email
+    await emailService.sendRegistrationEmail(user.email,user.name);
 }
 
 //user login controller
