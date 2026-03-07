@@ -4,7 +4,8 @@ const accountSchema = new mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User',
-        required:[true,"Account must be associated with a user"]
+        required:[true,"Account must be associated with a user"],
+        index:true
     },
     status:{
         enums:{
@@ -23,3 +24,9 @@ const accountSchema = new mongoose.Schema({
 },{
     timestamps:true
 });
+
+accountModel.index({user:1},{status:1});
+
+const accountModel=mongoose.model('Account',accountSchema);
+
+module.exports=accountModel;
