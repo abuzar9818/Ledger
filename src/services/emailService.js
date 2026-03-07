@@ -25,7 +25,7 @@ transporter.verify((error, success) => {
 const sendEmail = async (to, subject, text, html) => {
   try {
     const info = await transporter.sendMail({
-      from: `Ledger" <${process.env.EMAIL_USER}>`, // sender address
+      from: `"Ledger" <${process.env.EMAIL_USER}>`, // sender address
       to, // list of receivers
       subject, // Subject line
       text, // plain text body
@@ -33,7 +33,7 @@ const sendEmail = async (to, subject, text, html) => {
     });
 
     console.log('Message sent: %s', info.messageId);
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+console.log("Email sent successfully");
   } catch (error) {
     console.error('Error sending email:', error);
   }
