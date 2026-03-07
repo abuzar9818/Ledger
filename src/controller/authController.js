@@ -24,7 +24,8 @@ async function userRegisterController(req,res){
         },
         message:"User registered successfully",
         status:"success",
-        token});
+        token
+    });
 
     // Send registration email
     await emailService.sendRegistrationEmail(user.email,user.name);
