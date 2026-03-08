@@ -8,8 +8,6 @@ const mongoose=require('mongoose');
 async function createTransactionController(req, res) {
 
 
-    const session = await mongoose.startSession();
-
     try {
     // Validate request
     const { fromAccount, toAccount, amount, idempotencyKey  } = req.body;

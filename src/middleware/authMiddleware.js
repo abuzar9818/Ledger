@@ -8,7 +8,6 @@ async function authMiddleware(req,res,next){
     if(!token){
         return res.status(401).json({message:"Unauthorized",status:"failed"});
     }
-
     try {
         const decoded=jwt.verify(token,process.env.JWT_SECRET_KEY);
         const user=await userModel.findById(decoded.userId);
