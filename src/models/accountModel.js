@@ -4,14 +4,15 @@ const accountSchema = new mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User',
-        required:[true,"Account must be associated with a user"],
-        index:true
+        required:[true,"Account must be associated with a user"]
     },
     status:{
+        type:String,
         enums:{
             values:["ACTIVE","FROZEN","CLOSED"], 
-            message:"Invalid account status"
-        }
+            message:"Invalid account status",
+        },
+        default:"ACTIVE"
     },
     currency:{
         type:String,
@@ -25,7 +26,7 @@ const accountSchema = new mongoose.Schema({
     timestamps:true
 });
 
-accountModel.index({user:1},{status:1});
+accountSchema.index({user:1},{status:1});
 
 const accountModel=mongoose.model('Account',accountSchema);
 
