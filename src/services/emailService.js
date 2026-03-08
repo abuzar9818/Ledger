@@ -39,6 +39,16 @@ const sendEmail = async (to, subject, text, html) => {
   }
 };
 
+//send email for transaction notifications
+async function sendTransactionEmail(to, subject, text, html) {
+    await sendEmail(to, subject, text, html);
+}
+
+//send email for transaction failure notifications
+async function sendTransactionFailureEmail(to, subject, text, html) {
+    await sendEmail(to, subject, text, html);
+}
+
 async function sendRegistrationEmail(userEmail,name) {
     const subject = 'Welcome to Ledger!';
     const text = `Hi ${name},\n\nThank you for registering with Ledger! We're excited to have you on board.\n\nBest regards,\nThe Ledger Team`;
@@ -48,4 +58,4 @@ async function sendRegistrationEmail(userEmail,name) {
     
 }
 
-module.exports = { sendRegistrationEmail };
+module.exports = { sendRegistrationEmail, sendTransactionEmail, sendTransactionFailureEmail };

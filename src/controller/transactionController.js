@@ -7,6 +7,10 @@ const mongoose=require('mongoose');
 
 async function createTransactionController(req, res) {
 
+
+    const session = await mongoose.startSession();
+
+    try {
     // Validate request
     const { fromAccount, toAccount, amount, idempotencyKey  } = req.body;
 
@@ -56,7 +60,7 @@ async function createTransactionController(req, res) {
     }
 
     // Derive Sender Balance from Ledger
-    const balance=await.fromUserAccount.getBalance();
+    const balance=await fromUserAccount.getBalance();
 
     if(balance<amount){
         return res.status(400).json({ error: `Insufficient balance in the sender's account.Current balance is ${balance} and the requested amount is ${amount}` });
@@ -67,13 +71,13 @@ async function createTransactionController(req, res) {
     const session=await mongoose.startSession();
     session.startTransaction();
 
-    const transaction=await transactionModel.create({
+    const transaction=await transactionModel.create([{
         fromAccount,
         toAccount,
         amount,
         idempotencyKey,
         status:"PENDING"
-    },{session});
+    }],{session});
     
     const debitledgerEntry=await ledgerModel.create({
         account:fromAccount,
@@ -94,4 +98,44 @@ async function createTransactionController(req, res) {
 
     await session.commitTransaction();
     session.endSession();
+
+    // Send email notifications (async, no need to await)
+       try {
+
+            emailService.sendTransactionEmail(
+                fromUserAccount.email,
+                "Transaction Successful",
+                `Your transaction of ₹${amount} was successful.`,
+                `<p>Your transaction of <strong>₹${amount}</strong> was successful.</p>`
+            );
+
+            emailService.sendTransactionEmail(
+                toUserAccount.email,
+                "Incoming Transaction",
+                `You received ₹${amount}.`,
+                `<p>You received <strong>₹${amount}</strong>.</p>`
+            );
+
+        } catch (emailError) {
+            console.error("Email sending failed:", emailError);
+        }
+
+        return res.status(201).json({
+            message: "Transaction completed successfully",
+            transaction: transactionDoc
+        });
+
+    } catch(error) {
+
+        await session.abortTransaction();
+        session.endSession();
+
+        console.error(error);
+
+        return res.status(500).json({
+            error: "Transaction failed"
+        });
+    }
 }   
+
+module.exports={createTransactionController};
