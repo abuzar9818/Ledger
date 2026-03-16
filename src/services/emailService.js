@@ -1,14 +1,16 @@
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 
+const smtpPort = Number(process.env.SMTP_PORT || 587);
+const smtpSecure = String(process.env.SMTP_SECURE || 'false').toLowerCase() === 'true';
+
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.SMTP_HOST,
+  port: smtpPort,
+  secure: smtpSecure,
   auth: {
-    type: 'OAuth2',
-    user: process.env.EMAIL_USER,
-    clientId: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    refreshToken: process.env.REFRESH_TOKEN,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
 });
 
@@ -25,7 +27,7 @@ transporter.verify((error, success) => {
 const sendEmail = async (to, subject, text, html) => {
   try {
     const info = await transporter.sendMail({
-      from: `"Ledger" <${process.env.EMAIL_USER}>`, // sender address
+      from: `"Ledger" <${process.env.SMTP_USER}>`, // sender address
       to, // list of receivers
       subject, // Subject line
       text, // plain text body
