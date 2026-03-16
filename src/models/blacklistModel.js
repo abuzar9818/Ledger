@@ -16,4 +16,4 @@ tokenblacklistSchema.index({ createdAt: 1},
 
 const TokenBlacklist = mongoose.model('TokenBlacklist', tokenblacklistSchema);
 
-module.exports = tokenBlacklist;
+module.exports = TokenBlacklist;
