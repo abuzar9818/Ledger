@@ -73,20 +73,21 @@ async function createTransactionController(req, res) {
                 error: `Insufficient balance. Current balance is ${balance}`
             });
         }
-
+        let transaction;
+        try{
         // Start DB Transaction
         session = await mongoose.startSession();
         session.startTransaction();
 
-        const transaction = new transactionModel({
+        transaction = (await transactionModel.create([{
             fromaccount: fromAccount,
             toaccount: toAccount,
             amount: transferAmount,
             idempotencykey: idempotencyKey,
             status: "PENDING"
-        });
+        }], { session }))[0]; 
 
-        await transaction.save({ session });
+        // await transaction.save({ session });
 
         // Debit Ledger
         await ledgerModel.create([{
@@ -95,6 +96,12 @@ async function createTransactionController(req, res) {
             transaction: transaction._id,
             type: "DEBIT"
         }], { session });
+
+        await (() => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, 15 * 1000);
+    });
+})();
 
         // Credit Ledger
         await ledgerModel.create([{
@@ -105,11 +112,27 @@ async function createTransactionController(req, res) {
         }], { session });
 
         // Complete Transaction
-        transaction.status = "COMPLETED";
-        await transaction.save({ session });
+        // transaction.status = "COMPLETED";
+        // await transaction.save({ session });
+
+        await transactionModel.findOneAndUpdate(
+            { _id: transaction._id },
+            { status: "COMPLETED" },
+            { session}
+        );
 
         await session.commitTransaction();
         session.endSession();
+    } catch (error) {
+        await transactionModel.findOneAndUpdate(
+            { idempotencykey:idempotencyKey },
+            { status: "FAILED" }
+        )
+        return res.status(500).json({
+            error: "Transaction failed try after some time"
+
+        });
+    }
 
         // Send Emails (async)
         try {
