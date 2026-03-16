@@ -11,5 +11,8 @@ router.post('/', authMiddleware.authMiddleware, accountController.createAccountC
 //Get api/accounts/ // Protected route
 router.get('/', authMiddleware.authMiddleware, accountController.getUserAccountsController);
 
+//Get api/accounts/balance/:accountId // Protected route
+router.get('/balance/:accountId', authMiddleware.authMiddleware, accountController.getAccountBalanceController);
+
 
 module.exports = router;
