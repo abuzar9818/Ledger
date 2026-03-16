@@ -1,10 +1,38 @@
 const userModel=require('../models/userModel');
 const jwt=require('jsonwebtoken');
 
+function normalizeToken(token){
+    if(!token || typeof token !== 'string'){
+        return null;
+    }
+
+    let parsedToken=token.trim();
+
+    // Handle values like: token=<jwt>; Path=/
+    if(parsedToken.startsWith('token=')){
+        parsedToken=parsedToken.slice(6);
+    }
+
+    if(parsedToken.includes(';')){
+        parsedToken=parsedToken.split(';')[0].trim();
+    }
+
+    return parsedToken || null;
+}
+
+function getTokenFromRequest(req){
+    const authHeader=req.headers.authorization || req.header('authorization');
+    const bearerToken=authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+    const cookieToken=req.cookies?.token;
+    const rawCookieHeader=req.headers.cookie || req.header('cookie');
+
+    return normalizeToken(bearerToken) || normalizeToken(cookieToken) || normalizeToken(rawCookieHeader);
+}
+
 
 // Authentication middleware
 async function authMiddleware(req,res,next){
-    const token=req.cookies.token || req.header.authorization?.split(" ")[1];
+    const token=getTokenFromRequest(req);
     if(!token){
         return res.status(401).json({message:"Unauthorized",status:"failed"});
     }
@@ -24,7 +52,7 @@ async function authMiddleware(req,res,next){
 
 // Middleware to check if user is a system user
 async function systemUserMiddleware(req,res,next){
-    const token=req.cookies.token || req.header.authorization?.split(" ")[1];
+    const token=getTokenFromRequest(req);
     if(!token){
         return res.status(401).json({message:"Unauthorized",status:"failed"});
     }
