@@ -14,6 +14,12 @@ app.use(cookieParser());
 
 
 // Use routes
+
+
+app.get("/",(req,res)=>{
+    res.send("Welcome to Ledger API");
+}
+
 app.use('/api/auth',authRoutes);
 app.use('/api/accounts',accountRoutes);
 app.use('/api/transactions',transactionRoutes);
