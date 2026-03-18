@@ -175,8 +175,6 @@ async function createTransactionController(req, res) {
     }
 }
 
-
-
 async function createInitialFundController(req, res) {
 
     let session;
