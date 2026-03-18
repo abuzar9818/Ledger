@@ -354,6 +354,45 @@ async function getMyTransactions(req, res) {
     }
 }
 
+async function getTransactionStatus(req, res) {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "Invalid transaction id" });
+        }
+
+        const transaction = await transactionModel.findById(id).lean();
+
+        if (!transaction) {
+            return res.status(404).json({ error: "Transaction not found" });
+        }
+
+        const userAccounts = await accountModel.find({
+            user: req.user._id
+        }).select('_id');
+
+        const accountIds = userAccounts.map(acc => acc._id.toString());
+
+        const hasAccess =
+            accountIds.includes(transaction.fromaccount.toString()) ||
+            accountIds.includes(transaction.toaccount.toString());
+
+        if (!hasAccess) {
+            return res.status(403).json({ error: "Unauthorized to view this transaction status" });
+        }
+
+        return res.status(200).json({
+            transactionId: transaction._id,
+            status: transaction.status
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: "Failed to fetch transaction status"
+        });
+    }
+}
+
 async function reverseTransaction(req, res) {
 
     let session;
@@ -488,5 +527,6 @@ module.exports = {
     createTransactionController,
     createInitialFundController,
     getMyTransactions,
+    getTransactionStatus,
     reverseTransaction
 };
