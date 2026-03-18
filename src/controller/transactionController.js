@@ -306,8 +306,139 @@ async function getMyTransactions(req, res) {
     }
 }
 
+async function reverseTransaction(req, res) {
+
+    let session;
+
+    try {
+        const { id } = req.params;
+
+        const originalTx = await transactionModel.findById(id);
+
+        if (!originalTx) {
+            return res.status(404).json({ error: "Transaction not found" });
+        }
+
+        // Get user's accounts
+        const userAccounts = await accountModel.find({
+            user: req.user._id
+        }).select('_id');
+
+        const accountIds = userAccounts.map(acc => acc._id.toString());
+
+        // Only the logged-in user who performed (from account) the transaction can reverse it.
+        if (!accountIds.includes(originalTx.fromaccount.toString())) {
+            return res.status(403).json({
+                error: "Only the transaction initiator can reverse this transaction"
+            });
+        }
+
+        // Allow reversal only within 1 minute from transaction creation.
+        const oneMinuteMs = 60 * 1000;
+        const transactionAge = Date.now() - new Date(originalTx.createdAt).getTime();
+
+        if (transactionAge > oneMinuteMs) {
+            return res.status(400).json({
+                error: "Reversal window expired. Transactions can only be reversed within 1 minute"
+            });
+        }
+
+        if (originalTx.status !== "COMPLETED") {
+            return res.status(400).json({
+                error: "Only completed transactions can be reversed"
+            });
+        }
+
+        // Prevent double reversal
+        const alreadyReversed = await transactionModel.findOne({
+            reversedTransaction: id
+        });
+
+        if (alreadyReversed) {
+            return res.status(400).json({
+                error: "Transaction already reversed"
+            });
+        }
+
+        // Check account status
+        const fromAcc = await accountModel.findById(originalTx.fromaccount);
+        const toAcc = await accountModel.findById(originalTx.toaccount);
+
+        if (!fromAcc || !toAcc) {
+            return res.status(404).json({
+                error: "Associated account not found"
+            });
+        }
+
+        if (fromAcc.status !== "ACTIVE" || toAcc.status !== "ACTIVE") {
+            return res.status(400).json({
+                error: "Accounts must be ACTIVE to reverse"
+            });
+        }
+
+        session = await mongoose.startSession();
+        session.startTransaction();
+
+        // Create reversal transaction
+        const reversalTx = (await transactionModel.create([{
+            fromaccount: originalTx.toaccount,
+            toaccount: originalTx.fromaccount,
+            amount: originalTx.amount,
+            status: "COMPLETED",
+            idempotencykey: `reverse-${Date.now()}`,
+            reversedTransaction: originalTx._id
+        }], { session }))[0];
+
+        // Reverse ledger entries
+        await ledgerModel.create([
+            {
+                account: originalTx.toaccount,
+                amount: originalTx.amount,
+                transaction: reversalTx._id,
+                type: "DEBIT"
+            },
+            {
+                account: originalTx.fromaccount,
+                amount: originalTx.amount,
+                transaction: reversalTx._id,
+                type: "CREDIT"
+            }
+        ], { session, ordered: true });
+
+        // Update original
+        await transactionModel.findByIdAndUpdate(
+            id,
+            { status: "REVERSED" },
+            { session }
+        );
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return res.status(200).json({
+            message: "Transaction reversed successfully",
+            reversalTx
+        });
+
+    } catch (error) {
+
+        if (session) {
+            await session.abortTransaction();
+            session.endSession();
+        }
+
+        console.error("Reverse transaction error:", error);
+
+        return res.status(500).json({
+            error: "Reversal failed",
+            details: error.message
+        });
+    }
+}
+
 module.exports = {
     createTransactionController,
     createInitialFundController,
-    getMyTransactions
+    getMyTransactions,
+    reverseTransaction
 };

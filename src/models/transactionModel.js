@@ -32,6 +32,12 @@ const transactionSchema=new mongoose.Schema({
         unique:true,
         trim:true,
         index:true
+    },
+    reversedTransaction:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Transaction',
+        default:null,
+        index:true
     }
 },{
     timestamps:true
