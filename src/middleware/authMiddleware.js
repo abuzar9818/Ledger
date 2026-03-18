@@ -35,26 +35,26 @@ function getTokenFromRequest(req){
 async function authMiddleware(req,res,next){
     const token=getTokenFromRequest(req);
     if(!token){
-        return res.status(401).json({message:"Unauthorized",status:"failed"});
+        return res.status(401).json({message:"You need to login",status:"failed"});
     }
 
     const isBlacklisted=await blacklistModel.findOne({token});
 
     if(isBlacklisted){
-        return res.status(401).json({message:"Unauthorized Access",status:"failed"});
+        return res.status(401).json({message:"You need to login",status:"failed"});
     }
 
     try {
         const decoded=jwt.verify(token,process.env.JWT_SECRET_KEY);
         const user=await userModel.findById(decoded.userId);
         if(!user){
-            return res.status(401).json({message:"Unauthorized",status:"failed"});
+            return res.status(401).json({message:"You need to login",status:"failed"});
         }
         req.user=user;
         next();
     } catch (error) {
         console.error("Authentication error:",error);
-        res.status(401).json({message:"Unauthorized",status:"failed"});
+        res.status(401).json({message:"You need to login",status:"failed"});
     }
 }
 

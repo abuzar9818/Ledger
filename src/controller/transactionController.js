@@ -14,6 +14,10 @@ async function createTransactionController(req, res) {
 
     try {
 
+        if (!req.user?._id) {
+            return res.status(401).json({ error: "You need to login" });
+        }
+
         const { fromAccount, toAccount, amount, idempotencyKey } = req.body;
 
         if (!fromAccount || !toAccount || !amount || !idempotencyKey) {
@@ -41,6 +45,12 @@ async function createTransactionController(req, res) {
 
         if (!fromUserAccount || !toUserAccount) {
             return res.status(404).json({ error: "Invalid From or To Account" });
+        }
+
+        if (fromUserAccount.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                error: "You can only perform transactions from your own account"
+            });
         }
 
         // Idempotency check
