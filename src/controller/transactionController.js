@@ -260,8 +260,54 @@ async function createInitialFundController(req, res) {
     }
 }
 
+async function getMyTransactions(req, res) {
+    try {
+
+        const { page = 1, limit = 10 } = req.query;
+
+        const skip = (page - 1) * limit;
+
+        // Get user's accounts
+        const userAccounts = await accountModel.find({
+            user: req.user._id
+        }).select('_id');
+
+        const accountIds = userAccounts.map(acc => acc._id);
+
+        const transactions = await transactionModel.find({
+            $or: [
+                { fromaccount: { $in: accountIds } },
+                { toaccount: { $in: accountIds } }
+            ]
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit))
+        .lean();
+
+        const total = await transactionModel.countDocuments({
+            $or: [
+                { fromaccount: { $in: accountIds } },
+                { toaccount: { $in: accountIds } }
+            ]
+        });
+
+        res.status(200).json({
+            page: Number(page),
+            totalPages: Math.ceil(total / limit),
+            total,
+            transactions
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            error: "Failed to fetch transactions"
+        });
+    }
+}
 
 module.exports = {
     createTransactionController,
-    createInitialFundController
+    createInitialFundController,
+    getMyTransactions
 };
