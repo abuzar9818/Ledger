@@ -4,6 +4,9 @@ const accountModel = require('../models/accountModel');
 const emailService = require('../services/emailService');
 const mongoose = require('mongoose');
 
+const MAX_TRANSACTION_LIMIT = 50000;
+const DAILY_TRANSACTION_LIMIT = 100000;
+
 
 async function createTransactionController(req, res) {
 
@@ -25,6 +28,12 @@ async function createTransactionController(req, res) {
 
         if (transferAmount <= 0) {
             return res.status(400).json({ error: "Amount must be greater than zero" });
+        }
+
+        if (transferAmount > MAX_TRANSACTION_LIMIT) {
+            return res.status(400).json({
+                error: `Max transaction limit exceeded. Maximum allowed is ${MAX_TRANSACTION_LIMIT}`
+            });
         }
 
         const fromUserAccount = await accountModel.findById(fromAccount);
@@ -73,6 +82,36 @@ async function createTransactionController(req, res) {
                 error: `Insufficient balance. Current balance is ${balance}`
             });
         }
+
+        const dayStart = new Date();
+        dayStart.setHours(0, 0, 0, 0);
+
+        const dayEnd = new Date();
+        dayEnd.setHours(23, 59, 59, 999);
+
+        const dailyVolumeResult = await transactionModel.aggregate([
+            {
+                $match: {
+                    fromaccount: new mongoose.Types.ObjectId(fromAccount),
+                    status: { $in: ["PENDING", "COMPLETED"] },
+                    createdAt: { $gte: dayStart, $lte: dayEnd }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalAmount: { $sum: "$amount" }
+                }
+            }
+        ]);
+
+        const todayUsedAmount = dailyVolumeResult[0]?.totalAmount || 0;
+        const projectedDailyVolume = todayUsedAmount + transferAmount;
+
+        if (projectedDailyVolume > DAILY_TRANSACTION_LIMIT) {
+            return res.status(400).json({ error: "Daily limit exceeded" });
+        }
+
         let transaction;
         try{
         // Start DB Transaction
@@ -84,6 +123,7 @@ async function createTransactionController(req, res) {
             toaccount: toAccount,
             amount: transferAmount,
             idempotencykey: idempotencyKey,
+            dailyvolume: projectedDailyVolume,
             status: "PENDING"
         }], { session }))[0]; 
 

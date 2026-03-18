@@ -26,6 +26,11 @@ const transactionSchema=new mongoose.Schema({
         required:[true,"Amount is required"],
         min:[0,"Amount must be at least 0"]
     },
+    dailyvolume:{
+        type:Number,
+        default:0,
+        min:[0,"Daily volume cannot be negative"]
+    },
     idempotencykey:{
         type:String,
         required:[true,"Idempotency key is required"],
