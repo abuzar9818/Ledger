@@ -10,8 +10,8 @@ transactionRoutes.post('/',authMiddleware.authMiddleware, transactionController.
 //Post /api/transactions/system/initial-fund
 transactionRoutes.post('/system/initial-fund',authMiddleware.systemUserMiddleware, transactionController.createInitialFundController);
 
-//Get /api/transactions - Get all transactions for the authenticated user
-transactionRoutes.get('/',authMiddleware.authMiddleware, transactionController.getAllTransactions);
+//Get /api/transactions/my-transactions?page=1&limit=10
+transactionRoutes.get('/my-transactions', authMiddleware.authMiddleware, transactionController.getMyTransactions);
 
 
 module.exports=transactionRoutes;
