@@ -5,6 +5,7 @@ const cookieParser=require('cookie-parser');
 const authRoutes=require('./routes/authRoutes');
 const accountRoutes=require('./routes/accountRoutes');
 const transactionRoutes=require('./routes/transactionRoutes');
+const freezeUnfreezeRoutes=require('./routes/Freeze_UnfreezeRoutes');
 
 const app=express();
 
@@ -23,6 +24,7 @@ app.get("/",(req,res)=>{
 app.use('/api/auth',authRoutes);
 app.use('/api/accounts',accountRoutes);
 app.use('/api/transactions',transactionRoutes);
+app.use('/api',freezeUnfreezeRoutes);
 
 
 module.exports=app;
