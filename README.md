@@ -1,7 +1,5 @@
 # Ledger API
 
-Last Updated: 19 March 2026
-
 A RESTful API for managing financial accounts and transactions, built with Node.js, Express, and MongoDB.
 
 ## Features
