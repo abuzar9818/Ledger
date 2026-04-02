@@ -2,6 +2,7 @@ const transactionModel = require('../models/transactionModel');
 const ledgerModel = require('../models/ledgerModel');
 const accountModel = require('../models/accountModel');
 const emailService = require('../services/emailService');
+const auditLogService = require('../services/auditLogService');
 const mongoose = require('mongoose');
 
 const MAX_TRANSACTION_LIMIT = 50000;
@@ -204,6 +205,17 @@ async function createTransactionController(req, res) {
         } catch (emailError) {
             console.error("Email failed:", emailError);
         }
+
+        await auditLogService.logAuditEvent({
+            userId: req.user._id,
+            actionType: 'TRANSFER',
+            metadata: {
+                transactionId: transaction._id,
+                amount: transferAmount,
+                fromAccount,
+                toAccount
+            }
+        });
 
         return res.status(201).json({
             message: "Transaction completed successfully",
@@ -562,6 +574,18 @@ async function reverseTransaction(req, res) {
 
         await session.commitTransaction();
         session.endSession();
+
+        await auditLogService.logAuditEvent({
+            userId: req.user._id,
+            actionType: 'REVERSAL',
+            metadata: {
+                originalTransactionId: originalTx._id,
+                reversalTransactionId: reversalTx._id,
+                amount: originalTx.amount,
+                fromAccount: originalTx.fromaccount,
+                toAccount: originalTx.toaccount
+            }
+        });
 
         return res.status(200).json({
             message: "Transaction reversed successfully",

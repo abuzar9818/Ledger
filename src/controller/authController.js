@@ -2,6 +2,7 @@ const userModel=require('../models/userModel');
 const jwt=require('jsonwebtoken');
 const emailService=require('../services/emailService');
 const tokenBlacklistModel=require('../models/blacklistModel');
+const auditLogService=require('../services/auditLogService');
 
 //user registration controller
 // Post api/auth/register
@@ -48,6 +49,15 @@ async function userLoginController(req,res){
     }
 
     const token=jwt.sign({userId:user._id},process.env.JWT_SECRET_KEY,{expiresIn:'3d'});
+
+    await auditLogService.logAuditEvent({
+        userId: user._id,
+        actionType: 'LOGIN',
+        metadata: {
+            email: user.email,
+            ip: req.ip
+        }
+    });
 
     res.cookie('token',token)
     res.status(200).json({

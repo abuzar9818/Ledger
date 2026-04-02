@@ -1,5 +1,6 @@
 const Account = require("../models/accountModel");
 const mongoose = require("mongoose");
+const auditLogService = require('../services/auditLogService');
 
 // Freeze Account
 exports.freezeAccount = async (req, res) => {
@@ -21,6 +22,16 @@ exports.freezeAccount = async (req, res) => {
 
     account.status = "FROZEN";
     await account.save();
+
+    await auditLogService.logAuditEvent({
+      userId: req.user._id,
+      actionType: 'FREEZE',
+      metadata: {
+        accountId: account._id,
+        previousStatus: 'ACTIVE',
+        newStatus: 'FROZEN'
+      }
+    });
 
     res.status(200).json({
       message: "Account frozen successfully",
@@ -51,6 +62,16 @@ exports.unfreezeAccount = async (req, res) => {
 
     account.status = "ACTIVE";
     await account.save();
+
+    await auditLogService.logAuditEvent({
+      userId: req.user._id,
+      actionType: 'UNFREEZE',
+      metadata: {
+        accountId: account._id,
+        previousStatus: 'FROZEN',
+        newStatus: 'ACTIVE'
+      }
+    });
 
     res.status(200).json({
       message: "Account unfrozen successfully",

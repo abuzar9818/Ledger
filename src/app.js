@@ -7,6 +7,7 @@ const authRoutes=require('./routes/authRoutes');
 const accountRoutes=require('./routes/accountRoutes');
 const transactionRoutes=require('./routes/transactionRoutes');
 const freezeUnfreezeRoutes=require('./routes/Freeze_UnfreezeRoutes');
+const adminRoutes=require('./routes/adminRoutes');
 const swaggerDocument=require('./config/swagger');
 
 const app=express();
@@ -28,6 +29,7 @@ app.use('/api/auth',authRoutes);
 app.use('/api/accounts',accountRoutes);
 app.use('/api/transactions',transactionRoutes);
 app.use('/api',freezeUnfreezeRoutes);
+app.use('/admin',adminRoutes);
 
 
 module.exports=app;
