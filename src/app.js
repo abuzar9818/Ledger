@@ -6,6 +6,7 @@ const swaggerUi=require('swagger-ui-express');
 const authRoutes=require('./routes/authRoutes');
 const accountRoutes=require('./routes/accountRoutes');
 const transactionRoutes=require('./routes/transactionRoutes');
+const scheduledTransactionRoutes=require('./routes/scheduledTransactionRoutes');
 const freezeUnfreezeRoutes=require('./routes/Freeze_UnfreezeRoutes');
 const adminRoutes=require('./routes/adminRoutes');
 const swaggerDocument=require('./config/swagger');
@@ -28,6 +29,7 @@ app.get("/",(req,res)=>{
 app.use('/api/auth',authRoutes);
 app.use('/api/accounts',accountRoutes);
 app.use('/api/transactions',transactionRoutes);
+app.use('/api/scheduled-transactions',scheduledTransactionRoutes);
 app.use('/api',freezeUnfreezeRoutes);
 app.use('/admin',adminRoutes);
 
