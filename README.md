@@ -1,11 +1,12 @@
 # Ledger API
 
-A RESTful API for managing financial accounts and transactions, built with Node.js, Express, and MongoDB.
+A RESTful API for managing financial accounts, recurring transfers, reporting, and transaction audit trails, built with Node.js, Express, and MongoDB.
 
 ## Features
 
 - User registration, login, and logout with JWT authentication
 - Cookie-based and Bearer token auth support
+- Role-based access control with `USER`, `ADMIN`, and `SYSTEM`
 - Account creation and balance tracking
 - Fund transfers between accounts
 - Transaction ownership enforcement (only account owner can debit)
@@ -17,6 +18,11 @@ A RESTful API for managing financial accounts and transactions, built with Node.
     - Daily limit: INR 100,000
 - Account freeze/unfreeze controls
 - System-level initial fund injection
+- Scheduled recurring transactions (`DAILY`, `WEEKLY`, `MONTHLY`)
+- Transaction categories (`FOOD`, `RENT`, `SALARY`, `TRANSFER`, `OTHER`)
+- Monthly analytics summary reporting
+- Audit logging for LOGIN, TRANSFER, FREEZE, UNFREEZE, and REVERSAL actions
+- Rate limiting on auth and transaction endpoints
 - Email notifications via Nodemailer
 - Token blacklisting on logout
 - Swagger API documentation at `/api-docs`
@@ -27,6 +33,8 @@ A RESTful API for managing financial accounts and transactions, built with Node.
 - **Framework:** Express v5
 - **Database:** MongoDB (Mongoose)
 - **Auth:** JSON Web Tokens (jsonwebtoken) + bcryptjs
+- **Rate Limiting:** express-rate-limit
+- **Scheduling:** node-cron
 - **Email:** Nodemailer
 - **Other:** cookie-parser, dotenv, swagger-ui-express
 
@@ -86,6 +94,8 @@ After starting the server, open:
 | POST   | `/api/auth/login`    | None    | Login and get token  |
 | POST   | `/api/auth/logout`   | Required | Logout and blacklist token |
 
+**Rate limit:** 20 requests per minute on register and login.
+
 ---
 
 ### Accounts — `/api/accounts`
@@ -95,8 +105,8 @@ After starting the server, open:
 | POST   | `/api/accounts`                   | Required | Create a new account         |
 | GET    | `/api/accounts`                   | Required | Get all accounts for the user |
 | GET    | `/api/accounts/balance/:accountId` | Required | Get balance of an account    |
-| PATCH  | `/api/accounts/:id/freeze`        | None     | Freeze an account            |
-| PATCH  | `/api/accounts/:id/unfreeze`      | None     | Unfreeze an account          |
+| PATCH  | `/api/accounts/:id/freeze`        | ADMIN    | Freeze an account            |
+| PATCH  | `/api/accounts/:id/unfreeze`      | ADMIN    | Unfreeze an account          |
 
 ---
 
@@ -105,18 +115,69 @@ After starting the server, open:
 | Method | Endpoint                            | Auth          | Description                        |
 |--------|-------------------------------------|---------------|------------------------------------|
 | POST   | `/api/transactions`                 | Required      | Transfer funds between accounts    |
-| POST   | `/api/transactions/system/initial-fund` | System Only | Inject initial funds into an account |
+| POST   | `/api/transactions/system/initial-fund` | SYSTEM Only | Inject initial funds into an account |
 | GET    | `/api/transactions/my-transactions` | Required      | Get logged-in user's transactions  |
+| GET    | `/api/transactions/category/:category` | Required   | Get transactions by category       |
 | GET    | `/api/transactions/:id/status`      | Required      | Get transaction status             |
 | POST   | `/api/transactions/:id/reverse`     | Required      | Reverse a completed transaction    |
+
+#### Transaction Query Options
+
+- `page`, `limit`
+- `status`
+- `category`
+- `startDate`, `endDate`
+- `sortBy=amount|createdAt`
+- `sortOrder=asc|desc`
+
+#### Transaction Categories
+
+- `FOOD`
+- `RENT`
+- `SALARY`
+- `TRANSFER`
+- `OTHER`
 
 ### Transaction Rules
 
 - Allowed statuses: `PENDING`, `COMPLETED`, `FAILED`, `REVERSED`
+- Allowed categories: `FOOD`, `RENT`, `SALARY`, `TRANSFER`, `OTHER`
 - Max per transaction: `50000`
 - Daily total limit per source account: `100000`
 - If daily cap is crossed, API returns: `Daily limit exceeded`
 - Reversal is allowed only for the transaction initiator and only within 1 minute
+
+### Scheduled Transactions — `/api/scheduled-transactions`
+
+| Method | Endpoint                              | Auth     | Description                         |
+|--------|---------------------------------------|----------|-------------------------------------|
+| POST   | `/api/scheduled-transactions`         | Required | Create a recurring transfer         |
+| GET    | `/api/scheduled-transactions/my-schedules` | Required | List your scheduled transfers   |
+
+Supported recurrence values:
+- `DAILY`
+- `WEEKLY`
+- `MONTHLY`
+
+### Reports — `/reports`
+
+| Method | Endpoint                     | Auth     | Description                          |
+|--------|------------------------------|----------|--------------------------------------|
+| GET    | `/reports/monthly-summary`   | Required | Monthly credit/debit summary         |
+
+### Admin — `/admin`
+
+| Method | Endpoint                 | Auth  | Description                     |
+|--------|--------------------------|-------|---------------------------------|
+| GET    | `/admin/audit-logs`      | ADMIN | View audit logs                 |
+
+#### Audit Log Actions
+
+- `LOGIN`
+- `TRANSFER`
+- `FREEZE`
+- `UNFREEZE`
+- `REVERSAL`
 
 ---
 
@@ -133,26 +194,37 @@ src/
 │   ├── authController.js
 │   ├── accountController.js
 │   ├── transactionController.js
-│   └── Freeze_UnfreezeController.js
+│   ├── Freeze_UnfreezeController.js
+│   ├── scheduledTransactionController.js
+│   ├── auditLogController.js
+│   └── reportsController.js
 ├── middleware/
-│   └── authMiddleware.js    # JWT auth + system user guard
+│   ├── authMiddleware.js    # JWT auth + role guards
+│   └── rateLimitMiddleware.js
 ├── models/
 │   ├── userModel.js
 │   ├── accountModel.js
 │   ├── transactionModel.js
 │   ├── ledgerModel.js
+│   ├── scheduledTransactionModel.js
+│   ├── auditLogModel.js
 │   └── blacklistModel.js
 ├── routes/
 │   ├── authRoutes.js
 │   ├── accountRoutes.js
 │   ├── transactionRoutes.js
-│   └── Freeze_UnfreezeRoutes.js
+│   ├── scheduledTransactionRoutes.js
+│   ├── Freeze_UnfreezeRoutes.js
+│   ├── adminRoutes.js
+│   └── reportsRoutes.js
 └── services/
-    └── emailService.js
+    ├── emailService.js
+    ├── auditLogService.js
+    └── scheduledTransactionService.js
 ```
 
 ## License
 
 ISC
 
-Last Updated: 19 March 2026
+Last Updated: 3 April 2026
