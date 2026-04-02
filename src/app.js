@@ -7,6 +7,7 @@ const authRoutes=require('./routes/authRoutes');
 const accountRoutes=require('./routes/accountRoutes');
 const transactionRoutes=require('./routes/transactionRoutes');
 const scheduledTransactionRoutes=require('./routes/scheduledTransactionRoutes');
+const reportsRoutes=require('./routes/reportsRoutes');
 const freezeUnfreezeRoutes=require('./routes/Freeze_UnfreezeRoutes');
 const adminRoutes=require('./routes/adminRoutes');
 const swaggerDocument=require('./config/swagger');
@@ -30,6 +31,7 @@ app.use('/api/auth',authRoutes);
 app.use('/api/accounts',accountRoutes);
 app.use('/api/transactions',transactionRoutes);
 app.use('/api/scheduled-transactions',scheduledTransactionRoutes);
+app.use('/reports',reportsRoutes);
 app.use('/api',freezeUnfreezeRoutes);
 app.use('/admin',adminRoutes);
 
