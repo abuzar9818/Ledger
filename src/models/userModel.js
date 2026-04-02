@@ -21,6 +21,15 @@ const userSchema=new mongoose.Schema({
         minlength:[6,"Password must be at least 6 characters long"],
         select:false
     },
+    role:{
+        type:String,
+        enum:{
+            values:["USER","ADMIN","SYSTEM"],
+            message:"Invalid user role"
+        },
+        default:"USER",
+        index:true
+    },
     systemUser:{
         type:Boolean,
         default:false,
