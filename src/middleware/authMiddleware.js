@@ -58,31 +58,34 @@ async function authMiddleware(req,res,next){
     }
 }
 
-// Middleware to check if user is a system user
-async function systemUserMiddleware(req,res,next){
-    const token=getTokenFromRequest(req);
-    if(!token){
+function adminMiddleware(req,res,next){
+    if(!req.user){
         return res.status(401).json({message:"Unauthorized",status:"failed"});
     }
 
-    const isBlacklisted=await blacklistModel.findOne({token});
+    if(req.user.role !== 'ADMIN'){
+        return res.status(403).json({message:"Forbidden: Requires admin privileges",status:"failed"});
+    }
 
-    if(isBlacklisted){
-        return res.status(401).json({message:"Unauthorized Access",status:"failed"});
-    }
-    
-    try{
-        const decoded=jwt.verify(token,process.env.JWT_SECRET_KEY);
-        const user=await userModel.findById(decoded.userId).select('+systemUser');
-        if(!user.systemUser){
-            return res.status(403).json({message:"Forbidden: Requires system user privileges",status:"failed"});
-        }
-        req.user=user;
-        return next();
-    }catch(error){
-        console.error("System user check error:",error);
-        return res.status(401).json({message:"Unauthorized",status:"failed"});
-    }
+    return next();
 }
 
-module.exports={authMiddleware, systemUserMiddleware};
+// Middleware to check if user has SYSTEM role
+async function systemUserMiddleware(req,res,next){
+    if(!req.user){
+        return authMiddleware(req,res,()=>{
+            if(req.user.role !== 'SYSTEM'){
+                return res.status(403).json({message:"Forbidden: Requires SYSTEM role",status:"failed"});
+            }
+            return next();
+        });
+    }
+
+    if(req.user.role !== 'SYSTEM'){
+        return res.status(403).json({message:"Forbidden: Requires SYSTEM role",status:"failed"});
+    }
+
+    return next();
+}
+
+module.exports={authMiddleware, adminMiddleware, systemUserMiddleware};
