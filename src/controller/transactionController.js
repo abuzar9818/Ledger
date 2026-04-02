@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 
 const MAX_TRANSACTION_LIMIT = 50000;
 const DAILY_TRANSACTION_LIMIT = 100000;
+const TRANSACTION_CATEGORIES = ['FOOD', 'RENT', 'SALARY', 'TRANSFER', 'OTHER'];
 
 
 async function createTransactionController(req, res) {
@@ -19,7 +20,7 @@ async function createTransactionController(req, res) {
             return res.status(401).json({ error: "You need to login" });
         }
 
-        const { fromAccount, toAccount, amount, idempotencyKey } = req.body;
+        const { fromAccount, toAccount, amount, idempotencyKey, category } = req.body;
 
         if (!fromAccount || !toAccount || !amount || !idempotencyKey) {
             return res.status(400).json({ error: "Missing required fields" });
@@ -30,6 +31,11 @@ async function createTransactionController(req, res) {
         }
 
         const transferAmount = Number(amount);
+        const normalizedCategory = category ? String(category).toUpperCase() : 'TRANSFER';
+
+        if (!TRANSACTION_CATEGORIES.includes(normalizedCategory)) {
+            return res.status(400).json({ error: "Invalid transaction category" });
+        }
 
         if (transferAmount <= 0) {
             return res.status(400).json({ error: "Amount must be greater than zero" });
@@ -133,6 +139,7 @@ async function createTransactionController(req, res) {
             fromaccount: fromAccount,
             toaccount: toAccount,
             amount: transferAmount,
+            category: normalizedCategory,
             idempotencykey: idempotencyKey,
             dailyvolume: projectedDailyVolume,
             status: "PENDING"
@@ -274,6 +281,7 @@ async function createInitialFundController(req, res) {
             fromaccount: fromUserAccount._id,
             toaccount: toAccount,
             amount: transferAmount,
+            category: 'SALARY',
             idempotencykey: idempotencyKey,
             status: "PENDING"
         });
@@ -327,6 +335,7 @@ async function getMyTransactions(req, res) {
             page = 1,
             limit = 10,
             status,
+            category,
             startDate,
             endDate,
             sortBy = 'createdAt',
@@ -343,6 +352,12 @@ async function getMyTransactions(req, res) {
         if (status && !validStatus.includes(String(status).toUpperCase())) {
             return res.status(400).json({
                 error: 'Invalid status filter'
+            });
+        }
+
+        if (category && !TRANSACTION_CATEGORIES.includes(String(category).toUpperCase())) {
+            return res.status(400).json({
+                error: 'Invalid category filter'
             });
         }
 
@@ -400,6 +415,10 @@ async function getMyTransactions(req, res) {
             queryFilter.status = String(status).toUpperCase();
         }
 
+        if (category) {
+            queryFilter.category = String(category).toUpperCase();
+        }
+
         if (Object.keys(createdAtFilter).length > 0) {
             queryFilter.createdAt = createdAtFilter;
         }
@@ -423,6 +442,60 @@ async function getMyTransactions(req, res) {
     } catch (error) {
         res.status(500).json({
             error: "Failed to fetch transactions"
+        });
+    }
+}
+
+async function getTransactionsByCategory(req, res) {
+    try {
+        const { category } = req.params;
+        const { page = 1, limit = 10 } = req.query;
+
+        const normalizedCategory = String(category).toUpperCase();
+
+        if (!TRANSACTION_CATEGORIES.includes(normalizedCategory)) {
+            return res.status(400).json({
+                error: 'Invalid transaction category'
+            });
+        }
+
+        const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+        const limitNumber = Math.max(parseInt(limit, 10) || 10, 1);
+        const skip = (pageNumber - 1) * limitNumber;
+
+        const userAccounts = await accountModel.find({
+            user: req.user._id
+        }).select('_id');
+
+        const accountIds = userAccounts.map(acc => acc._id);
+
+        const queryFilter = {
+            category: normalizedCategory,
+            $or: [
+                { fromaccount: { $in: accountIds } },
+                { toaccount: { $in: accountIds } }
+            ]
+        };
+
+        const transactions = await transactionModel.find(queryFilter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limitNumber)
+            .lean();
+
+        const totalRecords = await transactionModel.countDocuments(queryFilter);
+        const totalPages = totalRecords === 0 ? 0 : Math.ceil(totalRecords / limitNumber);
+
+        return res.status(200).json({
+            category: normalizedCategory,
+            totalRecords,
+            totalPages,
+            currentPage: pageNumber,
+            transactions
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: 'Failed to fetch transactions by category'
         });
     }
 }
@@ -544,6 +617,7 @@ async function reverseTransaction(req, res) {
             fromaccount: originalTx.toaccount,
             toaccount: originalTx.fromaccount,
             amount: originalTx.amount,
+            category: 'TRANSFER',
             status: "COMPLETED",
             idempotencykey: `reverse-${Date.now()}`,
             reversedTransaction: originalTx._id
@@ -612,6 +686,7 @@ module.exports = {
     createTransactionController,
     createInitialFundController,
     getMyTransactions,
+    getTransactionsByCategory,
     getTransactionStatus,
     reverseTransaction
 };

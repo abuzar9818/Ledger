@@ -16,6 +16,9 @@ transactionRoutes.post('/system/initial-fund',authMiddleware.systemUserMiddlewar
 //Get /api/transactions/my-transactions?page=1&limit=10
 transactionRoutes.get('/my-transactions', authMiddleware.authMiddleware, transactionController.getMyTransactions);
 
+//Get /api/transactions/category/:category
+transactionRoutes.get('/category/:category', authMiddleware.authMiddleware, transactionController.getTransactionsByCategory);
+
 //Get /api/transactions/:id/status
 transactionRoutes.get('/:id/status', authMiddleware.authMiddleware, transactionController.getTransactionStatus);
 

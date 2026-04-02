@@ -26,6 +26,15 @@ const transactionSchema=new mongoose.Schema({
         required:[true,"Amount is required"],
         min:[0,"Amount must be at least 0"]
     },
+    category:{
+        type:String,
+        enums:{
+            values:["FOOD","RENT","SALARY","TRANSFER","OTHER"],
+            message:"Invalid transaction category"
+        },
+        default:"TRANSFER",
+        index:true
+    },
     dailyvolume:{
         type:Number,
         default:0,
