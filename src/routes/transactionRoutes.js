@@ -1,8 +1,11 @@
 const {Router}=require('express');
 const authMiddleware=require('../middleware/authMiddleware');
+const rateLimitMiddleware=require('../middleware/rateLimitMiddleware');
 const transactionController=require('../controller/transactionController');
 
 const transactionRoutes=Router();
+
+transactionRoutes.use(rateLimitMiddleware.transactionLimiter);
 
 //Post /api/transactions - Create a new transaction
 transactionRoutes.post('/',authMiddleware.authMiddleware, transactionController.createTransactionController);
