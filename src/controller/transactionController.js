@@ -311,9 +311,64 @@ async function createInitialFundController(req, res) {
 async function getMyTransactions(req, res) {
     try {
 
-        const { page = 1, limit = 10 } = req.query;
+        const {
+            page = 1,
+            limit = 10,
+            status,
+            startDate,
+            endDate,
+            sortBy = 'createdAt',
+            sortOrder = 'desc'
+        } = req.query;
 
-        const skip = (page - 1) * limit;
+        const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+        const limitNumber = Math.max(parseInt(limit, 10) || 10, 1);
+        const skip = (pageNumber - 1) * limitNumber;
+
+        const validStatus = ['PENDING', 'COMPLETED', 'FAILED', 'REVERSED'];
+        const validSortFields = ['amount', 'createdAt'];
+
+        if (status && !validStatus.includes(String(status).toUpperCase())) {
+            return res.status(400).json({
+                error: 'Invalid status filter'
+            });
+        }
+
+        if (!validSortFields.includes(sortBy)) {
+            return res.status(400).json({
+                error: 'Invalid sortBy. Allowed values: amount, createdAt'
+            });
+        }
+
+        const normalizedSortOrder = String(sortOrder).toLowerCase() === 'asc' ? 1 : -1;
+
+        const createdAtFilter = {};
+
+        if (startDate) {
+            const parsedStartDate = new Date(startDate);
+            if (Number.isNaN(parsedStartDate.getTime())) {
+                return res.status(400).json({
+                    error: 'Invalid startDate'
+                });
+            }
+            createdAtFilter.$gte = parsedStartDate;
+        }
+
+        if (endDate) {
+            const parsedEndDate = new Date(endDate);
+            if (Number.isNaN(parsedEndDate.getTime())) {
+                return res.status(400).json({
+                    error: 'Invalid endDate'
+                });
+            }
+            createdAtFilter.$lte = parsedEndDate;
+        }
+
+        if (createdAtFilter.$gte && createdAtFilter.$lte && createdAtFilter.$gte > createdAtFilter.$lte) {
+            return res.status(400).json({
+                error: 'startDate cannot be greater than endDate'
+            });
+        }
 
         // Get user's accounts
         const userAccounts = await accountModel.find({
@@ -322,28 +377,34 @@ async function getMyTransactions(req, res) {
 
         const accountIds = userAccounts.map(acc => acc._id);
 
-        const transactions = await transactionModel.find({
+        const queryFilter = {
             $or: [
                 { fromaccount: { $in: accountIds } },
                 { toaccount: { $in: accountIds } }
             ]
-        })
-        .sort({ createdAt: -1 })
+        };
+
+        if (status) {
+            queryFilter.status = String(status).toUpperCase();
+        }
+
+        if (Object.keys(createdAtFilter).length > 0) {
+            queryFilter.createdAt = createdAtFilter;
+        }
+
+        const transactions = await transactionModel.find(queryFilter)
+        .sort({ [sortBy]: normalizedSortOrder })
         .skip(skip)
-        .limit(Number(limit))
+        .limit(limitNumber)
         .lean();
 
-        const total = await transactionModel.countDocuments({
-            $or: [
-                { fromaccount: { $in: accountIds } },
-                { toaccount: { $in: accountIds } }
-            ]
-        });
+        const totalRecords = await transactionModel.countDocuments(queryFilter);
+        const totalPages = totalRecords === 0 ? 0 : Math.ceil(totalRecords / limitNumber);
 
         res.status(200).json({
-            page: Number(page),
-            totalPages: Math.ceil(total / limit),
-            total,
+            totalRecords,
+            totalPages,
+            currentPage: pageNumber,
             transactions
         });
 
