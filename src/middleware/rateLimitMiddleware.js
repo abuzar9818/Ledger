@@ -14,6 +14,7 @@ function createLimiter(maxRequests = MAX_REQUESTS_PER_MINUTE) {
     return rateLimit({
         windowMs: ONE_MINUTE_MS,
         max: maxRequests,
+        skip: (req) => req.user?.role === "SYSTEM",
         keyGenerator: (req) =>
             req.user ? req.user._id.toString() : req.ip,
         standardHeaders: true,
