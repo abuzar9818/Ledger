@@ -10,23 +10,24 @@ function jsonRateLimitHandler(req, res) {
     });
 }
 
-const authLimiter = rateLimit({
-    windowMs: ONE_MINUTE_MS,
-    max: MAX_REQUESTS_PER_MINUTE,
-    standardHeaders: true,
-    legacyHeaders: false,
-    handler: jsonRateLimitHandler
-});
+function createLimiter(maxRequests = MAX_REQUESTS_PER_MINUTE) {
+    return rateLimit({
+        windowMs: ONE_MINUTE_MS,
+        max: maxRequests,
+        keyGenerator: (req) =>
+            req.user ? req.user._id.toString() : req.ip,
+        standardHeaders: true,
+        legacyHeaders: false,
+        handler: jsonRateLimitHandler
+    });
+}
 
-const transactionLimiter = rateLimit({
-    windowMs: ONE_MINUTE_MS,
-    max: MAX_REQUESTS_PER_MINUTE,
-    standardHeaders: true,
-    legacyHeaders: false,
-    handler: jsonRateLimitHandler
-});
+const authLimiter = createLimiter(10); // stricter limit for auth routes to prevent brute-force attacks
+const transactionLimiter = createLimiter(5); // safer limit for transaction-related routes to prevent abuse
+const generalLimiter = createLimiter(20); // default limit for general routes
 
 module.exports = {
     authLimiter,
-    transactionLimiter
+    transactionLimiter,
+    generalLimiter
 };
