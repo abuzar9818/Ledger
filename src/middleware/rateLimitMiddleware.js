@@ -1,8 +1,15 @@
+require('dotenv').config();
 const rateLimit = require('express-rate-limit');
 
 const ONE_MINUTE_MS = 60 * 1000;
-const MAX_REQUESTS_PER_MINUTE = 20;
+const MAX_REQUESTS_PER_MINUTE =
+    process.env.MAX_REQUESTS_PER_MINUTE || 20;
+const LOGIN_RATE_LIMIT =
+    process.env.LOGIN_RATE_LIMIT || 5;
+const TRANSACTION_RATE_LIMIT =
+    process.env.TRANSACTION_RATE_LIMIT || 5;
 
+    
 function jsonRateLimitHandler(req, res) {
     return res.status(429).json({
         status: 'failed',
@@ -23,9 +30,9 @@ function createLimiter(maxRequests = MAX_REQUESTS_PER_MINUTE) {
     });
 }
 
-const authLimiter = createLimiter(10); // stricter limit for auth routes to prevent brute-force attacks
-const transactionLimiter = createLimiter(5); // safer limit for transaction-related routes to prevent abuse
-const generalLimiter = createLimiter(20); // default limit for general routes
+const authLimiter = createLimiter(LOGIN_RATE_LIMIT); // stricter limit for auth routes to prevent brute-force attacks
+const transactionLimiter = createLimiter(TRANSACTION_RATE_LIMIT); // safer limit for transaction-related routes to prevent abuse
+const generalLimiter = createLimiter(MAX_REQUESTS_PER_MINUTE); // default limit for general routes
 
 module.exports = {
     authLimiter,
