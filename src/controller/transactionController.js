@@ -130,87 +130,100 @@ async function createTransactionController(req, res) {
         }
 
         let transaction;
-        try{
-        // Start DB Transaction
-        session = await mongoose.startSession();
-        session.startTransaction();
-
-        transaction = (await transactionModel.create([{
-            fromaccount: fromAccount,
-            toaccount: toAccount,
-            amount: transferAmount,
-            category: normalizedCategory,
-            idempotencykey: idempotencyKey,
-            dailyvolume: projectedDailyVolume,
-            status: "PENDING"
-        }], { session }))[0]; 
-
-        // await transaction.save({ session });
-
-        // Debit Ledger
-        await ledgerModel.create([{
-            account: fromAccount,
-            amount: transferAmount,
-            transaction: transaction._id,
-            type: "DEBIT"
-        }], { session });
-
-        await (() => {
-    return new Promise((resolve) => {
-        setTimeout(resolve, 15 * 1000);
-    });
-})();
-
-        // Credit Ledger
-        await ledgerModel.create([{
-            account: toAccount,
-            amount: transferAmount,
-            transaction: transaction._id,
-            type: "CREDIT"
-        }], { session });
-
-        // Complete Transaction
-        // transaction.status = "COMPLETED";
-        // await transaction.save({ session });
-
-        await transactionModel.findOneAndUpdate(
-            { _id: transaction._id },
-            { status: "COMPLETED" },
-            { session}
-        );
-
-        await session.commitTransaction();
-        session.endSession();
-    } catch (error) {
-        await transactionModel.findOneAndUpdate(
-            { idempotencykey:idempotencyKey },
-            { status: "FAILED" }
-        )
-        return res.status(500).json({
-            error: "Transaction failed try after some time"
-
-        });
-    }
-
-        // Send Emails (async)
         try {
+            // Start DB Transaction
+            session = await mongoose.startSession();
+            session.startTransaction();
 
-            emailService.sendTransactionEmail(
-                fromUserAccount.email,
-                "Transaction Successful",
-                `Your transaction of ₹${transferAmount} was successful.`,
-                `<p>Your transaction of <strong>₹${transferAmount}</strong> was successful.</p>`
+            transaction = (await transactionModel.create([{
+                fromaccount: fromAccount,
+                toaccount: toAccount,
+                amount: transferAmount,
+                category: normalizedCategory,
+                idempotencykey: idempotencyKey,
+                dailyvolume: projectedDailyVolume,
+                status: "PENDING"
+            }], { session }))[0];
+
+            // await transaction.save({ session });
+
+            // Debit Ledger
+            await ledgerModel.create([{
+                account: fromAccount,
+                amount: transferAmount,
+                transaction: transaction._id,
+                type: "DEBIT"
+            }], { session });
+
+            await (() => {
+                return new Promise((resolve) => {
+                    setTimeout(resolve, 15 * 1000);
+                });
+            })();
+
+            // Credit Ledger
+            await ledgerModel.create([{
+                account: toAccount,
+                amount: transferAmount,
+                transaction: transaction._id,
+                type: "CREDIT"
+            }], { session });
+
+            // Complete Transaction
+            // transaction.status = "COMPLETED";
+            // await transaction.save({ session });
+
+            await transactionModel.findOneAndUpdate(
+                { _id: transaction._id },
+                { status: "COMPLETED" },
+                { session }
             );
 
-            emailService.sendTransactionEmail(
-                toUserAccount.email,
-                "Incoming Transaction",
-                `You received ₹${transferAmount}.`,
-                `<p>You received <strong>₹${transferAmount}</strong>.</p>`
+            await session.commitTransaction();
+            session.endSession();
+
+            try {
+
+                await emailService.sendTransactionEmail(
+                    fromUserAccount.email,
+                    "Transaction Successful",
+                    `Your transaction of ₹${transferAmount} was successful.`,
+                    `<p>Your transaction of <strong>₹${transferAmount}</strong> was successful.</p>`
+                );
+
+                await emailService.sendTransactionEmail(
+                    toUserAccount.email,
+                    "Incoming Transaction",
+                    `You received ₹${transferAmount}.`,
+                    `<p>You received <strong>₹${transferAmount}</strong>.</p>`
+                );
+
+            } catch (error) {
+                console.log("Success email failed");
+            }
+        } catch (error) {
+
+            await transactionModel.findOneAndUpdate(
+                { idempotencykey: idempotencyKey },
+                { status: "FAILED" }
             );
 
-        } catch (emailError) {
-            console.error("Email failed:", emailError);
+            try {
+
+                await emailService.sendTransactionFailureEmail(
+                    fromUserAccount.email,
+                    "Transaction Failed",
+                    `Your transaction of ₹${transferAmount} failed.`,
+                    `<p>Your transaction of <strong>₹${transferAmount}</strong> failed.</p>`
+                );
+
+            } catch (error) {
+                console.log("Failure email failed");
+            }
+
+            return res.status(500).json({
+                error: "Transaction failed"
+            });
         }
 
         await auditLogService.logAuditEvent({
@@ -424,10 +437,10 @@ async function getMyTransactions(req, res) {
         }
 
         const transactions = await transactionModel.find(queryFilter)
-        .sort({ [sortBy]: normalizedSortOrder })
-        .skip(skip)
-        .limit(limitNumber)
-        .lean();
+            .sort({ [sortBy]: normalizedSortOrder })
+            .skip(skip)
+            .limit(limitNumber)
+            .lean();
 
         const totalRecords = await transactionModel.countDocuments(queryFilter);
         const totalPages = totalRecords === 0 ? 0 : Math.ceil(totalRecords / limitNumber);
