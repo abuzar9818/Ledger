@@ -38,9 +38,13 @@ async function userRegisterController(req,res){
 async function userLoginController(req,res){
     const {email,password}=req.body;
 
-    const user=await userModel.findOne({email}).select('+password');
+    const user=await userModel.findOne({email}).select('+password +systemUser');
     if(!user){
         return res.status(404).json({message:"User not found",status:"failed"});
+    }
+
+    if(user.systemUser===true){
+        return res.status(403).json({message:"SYSTEM user cannot login",status:"failed"});
     }
 
     const isMatch=await user.comparePassword(password);

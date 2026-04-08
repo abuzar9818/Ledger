@@ -112,18 +112,25 @@ async function processDueScheduledTransactions() {
     isRunning = true;
 
     try {
-        const systemUser = await userModel.findOne({ role: 'SYSTEM' }).lean();
+        const systemUser = await userModel
+            .findOne({ systemUser: true })
+            .select('_id name email +systemUser')
+            .lean();
 
         if (!systemUser?._id) {
             console.error('Scheduled transaction runner skipped: SYSTEM user not found');
             return;
         }
 
+        console.info(`Scheduled transaction runner using SYSTEM user: ${systemUser._id}`);
+
         const now = new Date();
         const dueSchedules = await scheduledTransactionModel.find({
             status: 'PENDING',
             nextRunAt: { $lte: now }
         });
+
+        console.info(`Scheduled transaction runner found ${dueSchedules.length} due transaction(s)`);
 
         for (const schedule of dueSchedules) {
             const nextRunAt = getNextRunAt(schedule.nextRunAt || now, schedule.recurrence);
@@ -143,7 +150,7 @@ async function processDueScheduledTransactions() {
             }
         }
     } catch (error) {
-        console.error('Scheduled transaction processor error:', error.message);
+        console.error('Scheduled transaction processor error:', error);
     } finally {
         isRunning = false;
     }

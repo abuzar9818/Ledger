@@ -46,9 +46,12 @@ async function authMiddleware(req,res,next){
 
     try {
         const decoded=jwt.verify(token,process.env.JWT_SECRET_KEY);
-        const user=await userModel.findById(decoded.userId);
+        const user=await userModel.findById(decoded.userId).select('+systemUser');
         if(!user){
             return res.status(401).json({message:"You need to login",status:"failed"});
+        }
+        if(user.systemUser===true){
+            return res.status(403).json({message:"SYSTEM user cannot login",status:"failed"});
         }
         req.user=user;
         next();
@@ -70,6 +73,27 @@ function adminMiddleware(req,res,next){
     return next();
 }
 
+async function blockSystemUserLoginMiddleware(req,res,next){
+    try {
+        const {email}=req.body;
+
+        if(!email){
+            return next();
+        }
+
+        const user=await userModel.findOne({email}).select('+systemUser');
+
+        if(user?.systemUser===true){
+            return res.status(403).json({message:"SYSTEM user cannot login",status:"failed"});
+        }
+
+        return next();
+    } catch (error) {
+        console.error("SYSTEM login guard error:",error);
+        return res.status(500).json({message:"Unable to process login",status:"failed"});
+    }
+}
+
 // Middleware to check if user has SYSTEM role
 async function systemUserMiddleware(req,res,next){
     if(!req.user){
@@ -88,4 +112,4 @@ async function systemUserMiddleware(req,res,next){
     return next();
 }
 
-module.exports={authMiddleware, adminMiddleware, systemUserMiddleware};
+module.exports={authMiddleware, adminMiddleware, systemUserMiddleware, blockSystemUserLoginMiddleware};

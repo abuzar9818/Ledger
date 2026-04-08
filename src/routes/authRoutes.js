@@ -1,6 +1,7 @@
 const express=require('express');
 const authController=require('../controller/authController');
 const rateLimitMiddleware=require('../middleware/rateLimitMiddleware');
+const {blockSystemUserLoginMiddleware}=require('../middleware/authMiddleware');
 
 const router=express.Router();
 
@@ -8,7 +9,7 @@ const router=express.Router();
 router.post('/register',rateLimitMiddleware.authLimiter,authController.userRegisterController);
 
 // Post api/auth/login
-router.post('/login',rateLimitMiddleware.authLimiter,authController.userLoginController);
+router.post('/login',rateLimitMiddleware.authLimiter,blockSystemUserLoginMiddleware,authController.userLoginController);
 
 // Post api/auth/logout
 router.post('/logout', authController.userLogoutController);
