@@ -122,7 +122,7 @@ async function processDueScheduledTransactions() {
             return;
         }
 
-        console.info(`Scheduled transaction runner using SYSTEM user: ${systemUser._id}`);
+        // console.info(`Scheduled transaction runner using SYSTEM user: ${systemUser._id}`);
 
         const now = new Date();
         const dueSchedules = await scheduledTransactionModel.find({
@@ -130,7 +130,7 @@ async function processDueScheduledTransactions() {
             nextRunAt: { $lte: now }
         });
 
-        console.info(`Scheduled transaction runner found ${dueSchedules.length} due transaction(s)`);
+        // console.info(`Scheduled transaction runner found ${dueSchedules.length} due transaction(s)`);
 
         for (const schedule of dueSchedules) {
             const nextRunAt = getNextRunAt(schedule.nextRunAt || now, schedule.recurrence);
