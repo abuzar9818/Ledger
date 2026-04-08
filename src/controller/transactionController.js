@@ -203,10 +203,12 @@ async function createTransactionController(req, res) {
             }
         } catch (error) {
 
-            await transactionModel.findOneAndUpdate(
-                { idempotencykey: idempotencyKey },
-                { status: "FAILED" }
-            );
+            if (transaction?._id) {
+                await transactionModel.findByIdAndUpdate(
+                    transaction._id,
+                    { status: "FAILED" }
+                );
+            }
 
             try {
 
