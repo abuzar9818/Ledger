@@ -124,7 +124,7 @@ async function executeScheduledTransactions() {
         const systemUserId = await getSystemAutomationActorId();
 
         if (!systemUserId) {
-            console.error('Scheduled transaction runner skipped: SYSTEM user not found');
+            // console.error('Scheduled transaction runner skipped: SYSTEM user not found');
             return;
         }
 
