@@ -11,6 +11,7 @@ const scheduledTransactionRoutes=require('./routes/scheduledTransactionRoutes');
 const reportsRoutes=require('./routes/reportsRoutes');
 const freezeUnfreezeRoutes=require('./routes/Freeze_UnfreezeRoutes');
 const adminRoutes=require('./routes/adminRoutes');
+const accountClosureRequestRoutes=require('./routes/accountClosureRequestRoutes');
 const swaggerDocument=require('./config/swagger');
 
 const app=express();
@@ -36,6 +37,7 @@ app.use('/api/scheduled-transactions',scheduledTransactionRoutes);
 app.use('/reports',reportsRoutes);
 app.use('/api',freezeUnfreezeRoutes);
 app.use('/admin',adminRoutes);
+app.use('/api/account-closure-requests',accountClosureRequestRoutes);
 
 
 module.exports=app;
