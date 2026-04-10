@@ -271,7 +271,7 @@ const swaggerDocument = {
                     userId: { type: "string" },
                     actionType: {
                         type: "string",
-                        enum: ["LOGIN", "TRANSFER", "FREEZE", "UNFREEZE", "REVERSAL"]
+                        enum: ["LOGIN", "TRANSFER", "FREEZE", "UNFREEZE", "REVERSAL", "REOPEN"]
                     },
                     timestamp: { type: "string", format: "date-time" },
                     metadata: { type: "object", additionalProperties: true }
