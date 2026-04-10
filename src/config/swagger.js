@@ -18,7 +18,8 @@ const swaggerDocument = {
         { name: "Scheduled Transactions" },
         { name: "Reports" },
         { name: "Admin" },
-        { name: "Account Controls" }
+        { name: "Account Controls" },
+        { name: "Account Closure Requests" }
     ],
     components: {
         securitySchemes: {
@@ -83,6 +84,41 @@ const swaggerDocument = {
                 properties: {
                     accountId: { type: "string" },
                     balance: { type: "number" }
+                }
+            },
+            AccountClosureRequest: {
+                type: "object",
+                properties: {
+                    _id: { type: "string" },
+                    accountId: { type: "string" },
+                    requestedBy: { type: "string" },
+                    status: {
+                        type: "string",
+                        enum: ["pending", "approved", "rejected"]
+                    },
+                    reviewedBy: { type: ["string", "null"] },
+                    reviewedAt: { type: ["string", "null"], format: "date-time" },
+                    reason: { type: ["string", "null"] },
+                    createdAt: { type: "string", format: "date-time" },
+                    updatedAt: { type: "string", format: "date-time" }
+                }
+            },
+            AccountClosureRequestResponse: {
+                type: "object",
+                properties: {
+                    status: { type: "string", example: "success" },
+                    message: { type: "string" },
+                    closureRequest: { $ref: "#/components/schemas/AccountClosureRequest" }
+                }
+            },
+            AccountClosureRequestListResponse: {
+                type: "object",
+                properties: {
+                    status: { type: "string", example: "success" },
+                    closureRequests: {
+                        type: "array",
+                        items: { $ref: "#/components/schemas/AccountClosureRequest" }
+                    }
                 }
             },
             Transaction: {
@@ -406,6 +442,251 @@ const swaggerDocument = {
                     }
                 ],
                 responses: {
+            "/api/account-closure-requests/accounts/{id}/close-request": {
+                post: {
+                    tags: ["Account Closure Requests"],
+                    summary: "Request account closure",
+                    security: [{ bearerAuth: [] }],
+                    parameters: [
+                        {
+                            name: "id",
+                            in: "path",
+                            required: true,
+                            schema: { type: "string" },
+                            description: "Account ID"
+                        }
+                    ],
+                    requestBody: {
+                        required: false,
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        reason: { type: "string", example: "No longer needed" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    responses: {
+                        "201": {
+                            description: "Closure request created",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/AccountClosureRequestResponse" }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Invalid request",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        },
+                        "403": {
+                            description: "Forbidden",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        },
+                        "404": {
+                            description: "Account not found",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        },
+                        "409": {
+                            description: "Pending request already exists",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/account-closure-requests/accounts/my-close-requests": {
+                get: {
+                    tags: ["Account Closure Requests"],
+                    summary: "Get my account closure requests",
+                    security: [{ bearerAuth: [] }],
+                    responses: {
+                        "200": {
+                            description: "Closure requests fetched",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/AccountClosureRequestListResponse" }
+                                }
+                            }
+                        },
+                        "401": {
+                            description: "Unauthorized",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/account-closure-requests/admin/close-requests": {
+                get: {
+                    tags: ["Account Closure Requests"],
+                    summary: "Get all closure requests",
+                    security: [{ bearerAuth: [] }],
+                    responses: {
+                        "200": {
+                            description: "Closure requests fetched",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/AccountClosureRequestListResponse" }
+                                }
+                            }
+                        },
+                        "401": {
+                            description: "Unauthorized",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        },
+                        "403": {
+                            description: "Forbidden",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/account-closure-requests/admin/close-request/{id}/approve": {
+                patch: {
+                    tags: ["Account Closure Requests"],
+                    summary: "Approve an account closure request",
+                    security: [{ bearerAuth: [] }],
+                    parameters: [
+                        {
+                            name: "id",
+                            in: "path",
+                            required: true,
+                            schema: { type: "string" },
+                            description: "Closure request ID"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Closure request approved",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/AccountClosureRequestResponse" }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Invalid or already reviewed request",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        },
+                        "401": {
+                            description: "Unauthorized",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        },
+                        "403": {
+                            description: "Forbidden",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        },
+                        "404": {
+                            description: "Request or account not found",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/account-closure-requests/admin/close-request/{id}/reject": {
+                patch: {
+                    tags: ["Account Closure Requests"],
+                    summary: "Reject an account closure request",
+                    security: [{ bearerAuth: [] }],
+                    parameters: [
+                        {
+                            name: "id",
+                            in: "path",
+                            required: true,
+                            schema: { type: "string" },
+                            description: "Closure request ID"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Closure request rejected",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/AccountClosureRequestResponse" }
+                                }
+                            }
+                        },
+                        "400": {
+                            description: "Invalid or already reviewed request",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        },
+                        "401": {
+                            description: "Unauthorized",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        },
+                        "403": {
+                            description: "Forbidden",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        },
+                        "404": {
+                            description: "Request not found",
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/ErrorResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
                     "200": {
                         description: "Balance fetched",
                         content: {
