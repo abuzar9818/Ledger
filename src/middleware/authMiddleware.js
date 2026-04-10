@@ -94,22 +94,4 @@ async function blockSystemUserLoginMiddleware(req,res,next){
     }
 }
 
-// Middleware to check if user has SYSTEM role
-async function systemUserMiddleware(req,res,next){
-    if(!req.user){
-        return authMiddleware(req,res,()=>{
-            if(req.user.role !== 'SYSTEM'){
-                return res.status(403).json({message:"Forbidden: Requires SYSTEM role",status:"failed"});
-            }
-            return next();
-        });
-    }
-
-    if(req.user.role !== 'SYSTEM'){
-        return res.status(403).json({message:"Forbidden: Requires SYSTEM role",status:"failed"});
-    }
-
-    return next();
-}
-
-module.exports={authMiddleware, adminMiddleware, systemUserMiddleware, blockSystemUserLoginMiddleware};
+module.exports={authMiddleware, adminMiddleware, blockSystemUserLoginMiddleware};

@@ -1,6 +1,7 @@
 const transactionModel = require('../models/transactionModel');
 const ledgerModel = require('../models/ledgerModel');
 const accountModel = require('../models/accountModel');
+const userModel = require('../models/userModel');
 const emailService = require('../services/emailService');
 const auditLogService = require('../services/auditLogService');
 const mongoose = require('mongoose');
@@ -279,9 +280,18 @@ async function createInitialFundController(req, res) {
             return res.status(400).json({ error: "Invalid To Account" });
         }
 
-        const fromUserAccount = await accountModel.findOne({
-            user: req.user._id
-        });
+        const systemUser = await userModel
+            .findOne({ systemUser: true, role: 'SYSTEM' })
+            .select('_id')
+            .lean();
+
+        if (!systemUser?._id) {
+            return res.status(400).json({
+                error: "System account not found"
+            });
+        }
+
+        const fromUserAccount = await accountModel.findOne({ user: systemUser._id });
 
         if (!fromUserAccount) {
             return res.status(400).json({
