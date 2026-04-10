@@ -1,136 +1,138 @@
 # Ledger API
 
-A RESTful API for managing financial accounts, recurring transfers, reporting, and transaction audit trails, built with Node.js, Express, and MongoDB.
+Ledger is a Node.js, Express, and MongoDB backend for banking-style account management, transfers, scheduled payments, audit logging, and admin approval workflows.
 
-## Features
+## Overview
 
-- User registration, login, and logout with JWT authentication
-- Cookie-based and Bearer token auth support
-- Role-based access control with `USER`, `ADMIN`, and `SYSTEM`
+The API supports three actor types:
+
+- `USER` for normal customer flows
+- `ADMIN` for review, control, and approval operations
+- `SYSTEM` for internal automation such as scheduled transaction execution
+
+The backend is structured for production-style workflows: authenticated access, role checks, rate limiting, audit trails, and approval-based account lifecycle changes.
+
+## Key Features
+
+- JWT-based authentication with bearer token and cookie support
+- Role-based authorization with `USER`, `ADMIN`, and `SYSTEM`
 - Account creation and balance tracking
-- Fund transfers between accounts
-- Transaction ownership enforcement (only account owner can debit)
-- Idempotent transaction handling
-- Transaction status API (`PENDING`, `COMPLETED`, `FAILED`, `REVERSED`)
-- Transaction reversal (within 1 minute for initiator)
-- Daily fraud controls:
-    - Max single transaction: INR 50,000
-    - Daily limit: INR 100,000
-- Account freeze/unfreeze controls
-- System-level initial fund injection
-- Scheduled recurring transactions (`DAILY`, `WEEKLY`, `MONTHLY`)
-- Transaction categories (`FOOD`, `RENT`, `SALARY`, `TRANSFER`, `OTHER`)
-- Monthly analytics summary reporting
-- Audit logging for LOGIN, TRANSFER, FREEZE, UNFREEZE, and REVERSAL actions
-- Rate limiting on auth and transaction endpoints
-- Email notifications via Nodemailer
+- Manual transfers between accounts with ownership validation
+- Scheduled recurring transfers with `DAILY`, `WEEKLY`, and `MONTHLY` recurrence
+- Transaction status lookup and reversal support
+- Daily transfer controls and idempotency support
+- Account freeze and unfreeze controls for admins
+- Account closure request workflow with admin approval or rejection
+- Account reopen request workflow for closed accounts with admin-only approval
+- Monthly summary reporting
+- Audit logging for security-sensitive actions
 - Token blacklisting on logout
-- Swagger API documentation at `/api-docs`
+- Rate limiting on auth and transaction-heavy routes
+- Swagger documentation at `/api-docs`
 
 ## Tech Stack
 
 - **Runtime:** Node.js
-- **Framework:** Express v5
-- **Database:** MongoDB (Mongoose)
-- **Auth:** JSON Web Tokens (jsonwebtoken) + bcryptjs
-- **Rate Limiting:** express-rate-limit
+- **Framework:** Express 5
+- **Database:** MongoDB with Mongoose
+- **Authentication:** jsonwebtoken, bcryptjs
 - **Scheduling:** node-cron
+- **Rate limiting:** express-rate-limit
 - **Email:** Nodemailer
-- **Other:** cookie-parser, dotenv, swagger-ui-express
+- **Docs:** swagger-ui-express
+- **Utilities:** dotenv, cookie-parser, morgan
 
-## Getting Started
+## Project Setup
 
 ### Prerequisites
 
-- Node.js >= 18
-- MongoDB instance (local or Atlas)
+- Node.js 18 or newer
+- MongoDB instance or Atlas connection
 
-### Installation
+### Install Dependencies
 
 ```bash
-git clone <repo-url>
-cd ledger
 npm install
 ```
 
 ### Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the project root:
 
 ```env
-MONGO_URI=your_mongodb_connection_string
+MONGO_URI=mongodb+srv://...
 JWT_SECRET_KEY=your_jwt_secret
 EMAIL_USER=your_email@example.com
 EMAIL_PASS=your_email_password
+MAX_REQUESTS_PER_MINUTE=20
+LOGIN_RATE_LIMIT=5
+TRANSACTION_RATE_LIMIT=5
 ```
 
-### Running the Server
+### Run the Server
 
 ```bash
-# Development (with auto-reload)
+# Development
 npm run dev
 
 # Production
 npm start
 ```
 
-The server runs on **port 3000** by default.
+The server listens on port `3000`.
 
-### API Docs
+### API Documentation
 
-After starting the server, open:
+Open:
 
-`http://localhost:3000/api-docs`
+```text
+http://localhost:3000/api-docs
+```
 
----
+## API Routes
 
-## API Reference
+### Authentication — `/api/auth`
 
-### Auth — `/api/auth`
-
-| Method | Endpoint            | Auth     | Description          |
-|--------|---------------------|----------|----------------------|
-| POST   | `/api/auth/register` | None    | Register a new user  |
-| POST   | `/api/auth/login`    | None    | Login and get token  |
-| POST   | `/api/auth/logout`   | Required | Logout and blacklist token |
-
-**Rate limit:** 20 requests per minute on register and login.
-
----
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/api/auth/register` | Public | Register a new user |
+| POST | `/api/auth/login` | Public | Log in and receive a token |
+| POST | `/api/auth/logout` | Authenticated | Log out and blacklist the token |
 
 ### Accounts — `/api/accounts`
 
-| Method | Endpoint                          | Auth     | Description                  |
-|--------|-----------------------------------|----------|------------------------------|
-| POST   | `/api/accounts`                   | Required | Create a new account         |
-| GET    | `/api/accounts`                   | Required | Get all accounts for the user |
-| GET    | `/api/accounts/balance/:accountId` | Required | Get balance of an account    |
-| PATCH  | `/api/accounts/:id/freeze`        | ADMIN    | Freeze an account            |
-| PATCH  | `/api/accounts/:id/unfreeze`      | ADMIN    | Unfreeze an account          |
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/api/accounts` | USER | Create a new account |
+| GET | `/api/accounts` | USER | List the logged-in user’s accounts |
+| GET | `/api/accounts/balance/:accountId` | USER | Fetch balance for a specific account |
 
----
+### Account Controls — `/api`
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| PATCH | `/api/accounts/:id/freeze` | ADMIN | Freeze an account |
+| PATCH | `/api/accounts/:id/unfreeze` | ADMIN | Unfreeze an account |
 
 ### Transactions — `/api/transactions`
 
-| Method | Endpoint                            | Auth          | Description                        |
-|--------|-------------------------------------|---------------|------------------------------------|
-| POST   | `/api/transactions`                 | Required      | Transfer funds between accounts    |
-| POST   | `/api/transactions/system/initial-fund` | SYSTEM Only | Inject initial funds into an account |
-| GET    | `/api/transactions/my-transactions` | Required      | Get logged-in user's transactions  |
-| GET    | `/api/transactions/category/:category` | Required   | Get transactions by category       |
-| GET    | `/api/transactions/:id/status`      | Required      | Get transaction status             |
-| POST   | `/api/transactions/:id/reverse`     | Required      | Reverse a completed transaction    |
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/api/transactions` | USER | Create a transfer transaction |
+| POST | `/api/transactions/system/initial-fund` | ADMIN | Inject initial funds into an account |
+| GET | `/api/transactions/my-transactions` | USER | List the current user’s transactions |
+| GET | `/api/transactions/category/:category` | USER | Filter transactions by category |
+| GET | `/api/transactions/:id/status` | USER | Check a transaction status |
+| POST | `/api/transactions/:id/reverse` | USER | Reverse an eligible transaction |
 
-#### Transaction Query Options
+Supported transaction statuses:
 
-- `page`, `limit`
-- `status`
-- `category`
-- `startDate`, `endDate`
-- `sortBy=amount|createdAt`
-- `sortOrder=asc|desc`
+- `PENDING`
+- `COMPLETED`
+- `FAILED`
+- `REVERSED`
 
-#### Transaction Categories
+Supported transaction categories:
 
 - `FOOD`
 - `RENT`
@@ -138,93 +140,140 @@ After starting the server, open:
 - `TRANSFER`
 - `OTHER`
 
-### Transaction Rules
-
-- Allowed statuses: `PENDING`, `COMPLETED`, `FAILED`, `REVERSED`
-- Allowed categories: `FOOD`, `RENT`, `SALARY`, `TRANSFER`, `OTHER`
-- Max per transaction: `50000`
-- Daily total limit per source account: `100000`
-- If daily cap is crossed, API returns: `Daily limit exceeded`
-- Reversal is allowed only for the transaction initiator and only within 1 minute
-
 ### Scheduled Transactions — `/api/scheduled-transactions`
 
-| Method | Endpoint                              | Auth     | Description                         |
-|--------|---------------------------------------|----------|-------------------------------------|
-| POST   | `/api/scheduled-transactions`         | Required | Create a recurring transfer         |
-| GET    | `/api/scheduled-transactions/my-schedules` | Required | List your scheduled transfers   |
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/api/scheduled-transactions` | USER | Create a recurring transfer |
+| GET | `/api/scheduled-transactions/my-schedules` | USER | List the user’s scheduled transfers |
 
 Supported recurrence values:
+
 - `DAILY`
 - `WEEKLY`
 - `MONTHLY`
 
 ### Reports — `/reports`
 
-| Method | Endpoint                     | Auth     | Description                          |
-|--------|------------------------------|----------|--------------------------------------|
-| GET    | `/reports/monthly-summary`   | Required | Monthly credit/debit summary         |
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/reports/monthly-summary` | USER | Get monthly debit/credit summary |
 
 ### Admin — `/admin`
 
-| Method | Endpoint                 | Auth  | Description                     |
-|--------|--------------------------|-------|---------------------------------|
-| GET    | `/admin/audit-logs`      | ADMIN | View audit logs                 |
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/admin/audit-logs` | ADMIN | View audit logs |
 
-#### Audit Log Actions
+### Account Closure Requests — `/api/account-closure-requests`
 
-- `LOGIN`
-- `TRANSFER`
-- `FREEZE`
-- `UNFREEZE`
-- `REVERSAL`
+Users cannot close accounts directly. They can submit a closure request, and admins review it.
 
----
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/accounts/:id/close-request` | USER | Request closure for one of the user’s own accounts |
+| GET | `/accounts/my-close-requests` | USER | View the user’s own closure requests |
+| GET | `/admin/close-requests` | ADMIN | View all closure requests |
+| PATCH | `/admin/close-request/:id/approve` | ADMIN | Approve a closure request and close the account |
+| PATCH | `/admin/close-request/:id/reject` | ADMIN | Reject a closure request |
+
+### Account Reopen Requests — `/api/account-reopen-requests`
+
+Users cannot reopen closed accounts directly. They submit a reopen request, and only admins can approve it.
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/accounts/:id/reopen-request` | USER | Request reopening of a closed account |
+| GET | `/accounts/my-reopen-requests` | USER | View the user’s own reopen requests |
+| GET | `/admin/reopen-requests` | ADMIN | View all reopen requests |
+| PATCH | `/admin/reopen-request/:id/approve` | ADMIN | Approve a reopen request and reactivate the account |
+| PATCH | `/admin/reopen-request/:id/reject` | ADMIN | Reject a reopen request |
+
+## Approval Workflows
+
+### Close Account
+
+1. User submits a closure request for one of their own accounts.
+2. Admin reviews the request.
+3. On approval, the account status changes to `CLOSED`.
+4. On rejection, the request is marked as `rejected`.
+
+### Reopen Account
+
+1. User submits a reopen request for a closed account they own.
+2. Admin reviews the request.
+3. On approval, the account status changes to `ACTIVE`.
+4. On rejection, the request is marked as `rejected`.
+
+## Authentication Notes
+
+- Requests can use either `Authorization: Bearer <token>` or the auth cookie.
+- `SYSTEM` users are blocked from normal login flows.
+- Admin-only routes are protected by the existing role middleware.
+
+## Rate Limiting
+
+- Auth routes use the configured login rate limit.
+- Transaction and scheduled-transfer routes use the transaction rate limit.
+- `SYSTEM` traffic is excluded from rate limiting.
 
 ## Project Structure
 
-```
-server.js                    # Entry point
+```text
+server.js
 src/
-├── app.js                   # Express app setup & route mounting
+├── app.js
 ├── config/
-│   ├── db.js                # MongoDB connection
-│   └── swagger.js           # OpenAPI document config
+│   ├── db.js
+│   └── swagger.js
 ├── controller/
-│   ├── authController.js
-│   ├── accountController.js
-│   ├── transactionController.js
 │   ├── Freeze_UnfreezeController.js
-│   ├── scheduledTransactionController.js
+│   ├── accountClosureRequestController.js
+│   ├── accountController.js
+│   ├── accountReopenRequestController.js
 │   ├── auditLogController.js
-│   └── reportsController.js
+│   ├── authController.js
+│   ├── reportsController.js
+│   ├── scheduledTransactionController.js
+│   └── transactionController.js
 ├── middleware/
-│   ├── authMiddleware.js    # JWT auth + role guards
-│   └── rateLimitMiddleware.js
+│   ├── authMiddleware.js
+│   ├── rateLimitMiddleware.js
+│   └── roleMiddleware.js
 ├── models/
-│   ├── userModel.js
+│   ├── accountClosureRequestModel.js
 │   ├── accountModel.js
-│   ├── transactionModel.js
+│   ├── accountReopenRequestModel.js
+│   ├── auditLogModel.js
+│   ├── blacklistModel.js
 │   ├── ledgerModel.js
 │   ├── scheduledTransactionModel.js
-│   ├── auditLogModel.js
-│   └── blacklistModel.js
+│   ├── transactionModel.js
+│   └── userModel.js
 ├── routes/
-│   ├── authRoutes.js
+│   ├── accountClosureRequestRoutes.js
+│   ├── accountReopenRequestRoutes.js
 │   ├── accountRoutes.js
-│   ├── transactionRoutes.js
-│   ├── scheduledTransactionRoutes.js
-│   ├── Freeze_UnfreezeRoutes.js
 │   ├── adminRoutes.js
-│   └── reportsRoutes.js
+│   ├── authRoutes.js
+│   ├── Freeze_UnfreezeRoutes.js
+│   ├── reportsRoutes.js
+│   ├── scheduledTransactionRoutes.js
+│   └── transactionRoutes.js
 └── services/
-    ├── emailService.js
     ├── auditLogService.js
+    ├── emailService.js
     └── scheduledTransactionService.js
 ```
+
+## Notes for Development
+
+- MongoDB must be available before starting the scheduler.
+- Scheduled transfers run from the service layer, not through API routes.
+- Audit logs are written for sensitive actions including transfer, freeze, unfreeze, reversal, and reopen approval.
 
 ## License
 
 ISC
 
-Last Updated: 3 April 2026
+Last Updated: 10 April 2026
