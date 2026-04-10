@@ -10,7 +10,7 @@ const auditLogSchema = new mongoose.Schema({
     actionType: {
         type: String,
         enum: {
-            values: ['LOGIN', 'TRANSFER', 'FREEZE', 'UNFREEZE', 'REVERSAL'],
+            values: ['LOGIN', 'TRANSFER', 'FREEZE', 'UNFREEZE', 'REVERSAL', 'REOPEN'],
             message: 'Invalid action type'
         },
         required: [true, 'Action type is required'],

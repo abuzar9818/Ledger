@@ -12,6 +12,7 @@ const reportsRoutes=require('./routes/reportsRoutes');
 const freezeUnfreezeRoutes=require('./routes/Freeze_UnfreezeRoutes');
 const adminRoutes=require('./routes/adminRoutes');
 const accountClosureRequestRoutes=require('./routes/accountClosureRequestRoutes');
+const accountReopenRequestRoutes=require('./routes/accountReopenRequestRoutes');
 const swaggerDocument=require('./config/swagger');
 
 const app=express();
@@ -38,6 +39,7 @@ app.use('/reports',reportsRoutes);
 app.use('/api',freezeUnfreezeRoutes);
 app.use('/admin',adminRoutes);
 app.use('/api/account-closure-requests',accountClosureRequestRoutes);
+app.use('/api/account-reopen-requests',accountReopenRequestRoutes);
 
 
 module.exports=app;
