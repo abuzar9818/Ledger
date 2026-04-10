@@ -106,7 +106,7 @@ async function executeScheduledTransfer(schedule, systemUserId) {
 
 async function getSystemAutomationActorId() {
     const systemUser = await userModel
-        .findOne({ systemUser: true, role: 'SYSTEM' })
+        .findOne({ systemUser: true })
         .select('_id')
         .lean();
 

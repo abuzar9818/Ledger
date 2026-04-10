@@ -281,7 +281,7 @@ async function createInitialFundController(req, res) {
         }
 
         const systemUser = await userModel
-            .findOne({ systemUser: true, role: 'SYSTEM' })
+            .findOne({ systemUser: true })
             .select('_id')
             .lean();
 
