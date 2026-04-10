@@ -9,7 +9,6 @@ const LOGIN_RATE_LIMIT =
 const TRANSACTION_RATE_LIMIT =
     process.env.TRANSACTION_RATE_LIMIT || 5;
 
-    
 function jsonRateLimitHandler(req, res) {
     return res.status(429).json({
         status: 'failed',
@@ -22,8 +21,13 @@ function createLimiter(maxRequests = MAX_REQUESTS_PER_MINUTE) {
         windowMs: ONE_MINUTE_MS,
         max: maxRequests,
         skip: (req) => req.user?.role === "SYSTEM",
-        keyGenerator: (req) =>
-            req.user ? req.user._id.toString() : req.ip,
+        keyGenerator: (req) => {
+            if (req.user) {
+                return req.user._id.toString();
+            }
+            // Use the ipKeyGenerator to properly handle IPv6
+            return rateLimit.ipKeyGenerator(req);
+        },
         standardHeaders: true,
         legacyHeaders: false,
         handler: jsonRateLimitHandler
