@@ -13,7 +13,7 @@ function DashboardTopbar({ title = "Dashboard", subtitle = "Track your accounts 
   };
 
   return (
-    <header className="border-b border-slate-200/80 bg-white/70 px-4 py-3 backdrop-blur-sm sm:px-6">
+    <header className="border-b border-slate-200/80 bg-white/70 px-4 py-4 backdrop-blur-sm sm:px-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-slate-900">{title}</h2>
