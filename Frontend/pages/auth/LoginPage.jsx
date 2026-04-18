@@ -127,6 +127,15 @@ function LoginPage() {
           Create account
         </Link>
       </p>
+
+      <div className="mt-6 border-t border-slate-200 pt-4">
+        <Link
+          to="/"
+          className="inline-flex items-center text-sm font-semibold text-teal-700 transition hover:text-teal-600 hover:underline"
+        >
+          Back to Home
+        </Link>
+      </div>
     </section>
   );
 }
