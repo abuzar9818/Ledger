@@ -51,11 +51,12 @@ function HomePage() {
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 px-6 py-14 text-white shadow-2xl sm:px-10 sm:py-16">
         <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-teal-300/20 blur-3xl" />
         <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-amber-300/20 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] opacity-30" />
 
         <div className="relative grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <div className="max-w-3xl">
             <p className="inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-200">
-            Ledger Platform
+              Ledger Platform
             </p>
             <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
               A High-Trust Financial Workspace For Modern Ledger Operations
@@ -77,6 +78,12 @@ function HomePage() {
               >
                 Login
               </Link>
+              <Link
+                to="/dashboard"
+                className="rounded-md border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                Go To Dashboard
+              </Link>
             </div>
           </div>
 
@@ -95,6 +102,30 @@ function HomePage() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-3">
+        <article className="ui-surface rounded-2xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">01</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-900">Secure Login Flow</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Clear entry points to login and registration keep the first step obvious and fast.
+          </p>
+        </article>
+        <article className="ui-surface rounded-2xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">02</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-900">Clean App Navigation</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Jump from the home page into dashboard, transfer money, or view transaction history.
+          </p>
+        </article>
+        <article className="ui-surface rounded-2xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">03</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-900">Designed For Clarity</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Spacious cards, gradients, and readable sections make the product feel more premium.
+          </p>
+        </article>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -215,6 +246,27 @@ function HomePage() {
               “The home page now clearly explains the value, and the buttons guide users straight into the right flow.”
             </p>
             <p className="mt-4 text-sm font-semibold text-slate-900">UI Review Note</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="ui-surface rounded-3xl p-6 sm:p-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Quick Access</p>
+            <h2 className="mt-2 text-2xl font-bold text-slate-900">Move around the product faster</h2>
+            <p className="mt-1 text-sm text-slate-600">Use these direct links to jump into the main workflow pages.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/dashboard" className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">
+              Dashboard
+            </Link>
+            <Link to="/dashboard/transfer" className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
+              Transfer Money
+            </Link>
+            <Link to="/dashboard/transactions" className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
+              Transactions
+            </Link>
           </div>
         </div>
       </section>
