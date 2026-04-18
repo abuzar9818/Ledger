@@ -1,6 +1,7 @@
 const express=require('express');
 const morgan=require('morgan');
 const cookieParser=require('cookie-parser');
+const cors=require('cors');
 const swaggerUi=require('swagger-ui-express');
 
 // Import routes
@@ -16,6 +17,13 @@ const accountReopenRequestRoutes=require('./routes/accountReopenRequestRoutes');
 const swaggerDocument=require('./config/swagger');
 
 const app=express();
+
+const allowedOrigin=process.env.FRONTEND_URL || 'http://localhost:5173';
+
+app.use(cors({
+    origin: allowedOrigin,
+    credentials: true,
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
