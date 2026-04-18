@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Footer() {
   return (
     <footer className="mt-10 border-t border-slate-200/80 bg-white/75 backdrop-blur-sm">
@@ -13,18 +15,18 @@ function Footer() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Navigation</p>
             <div className="mt-3 space-y-2 text-sm text-slate-600">
-              <p>Home</p>
-              <p>Login</p>
-              <p>Register</p>
+              <Link className="block transition hover:text-slate-900" to="/">Home</Link>
+              <Link className="block transition hover:text-slate-900" to="/auth/login">Login</Link>
+              <Link className="block transition hover:text-slate-900" to="/auth/register">Register</Link>
             </div>
           </div>
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Product</p>
             <div className="mt-3 space-y-2 text-sm text-slate-600">
-              <p>Dashboard</p>
-              <p>Transfers</p>
-              <p>History</p>
+              <Link className="block transition hover:text-slate-900" to="/dashboard">Dashboard</Link>
+              <Link className="block transition hover:text-slate-900" to="/dashboard/transfer">Transfers</Link>
+              <Link className="block transition hover:text-slate-900" to="/dashboard/transactions">History</Link>
             </div>
           </div>
         </div>
