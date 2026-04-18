@@ -19,4 +19,16 @@ scheduledTransactionRoutes.get(
     scheduledTransactionController.getMyScheduledTransactions
 );
 
+scheduledTransactionRoutes.put(
+    '/:id',
+    authMiddleware.authMiddleware,
+    scheduledTransactionController.updateScheduledTransaction
+);
+
+scheduledTransactionRoutes.patch(
+    '/:id/cancel',
+    authMiddleware.authMiddleware,
+    scheduledTransactionController.cancelScheduledTransaction
+);
+
 module.exports = scheduledTransactionRoutes;
