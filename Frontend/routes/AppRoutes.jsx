@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
 import AuthLayout from "../layout/AuthLayout";
+import HomePage from "../pages/HomePage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 import TransferPage from "../pages/dashboard/TransferPage";
 import TransactionHistoryPage from "../pages/dashboard/TransactionHistoryPage";
@@ -13,7 +14,9 @@ import ProtectedRoute, { PublicOnlyRoute } from "./ProtectedRoute";
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<RoleRedirect />} />
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<HomePage />} />
+      </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
         <Route path="/dashboard" element={<DashboardPage />} />
