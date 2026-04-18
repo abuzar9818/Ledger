@@ -79,7 +79,7 @@ function LoginPage() {
           <input
             id="email"
             type="email"
-            className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
+            className="ui-input"
             {...register("email", {
               required: "Email is required",
               pattern: {
@@ -98,7 +98,7 @@ function LoginPage() {
           <input
             id="password"
             type="password"
-            className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
+            className="ui-input"
             {...register("password", {
               required: "Password is required",
               minLength: {
@@ -115,7 +115,7 @@ function LoginPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-xl bg-gradient-to-r from-slate-900 to-teal-900 px-4 py-2.5 text-white shadow-lg shadow-slate-900/15 transition hover:from-slate-800 hover:to-teal-800 disabled:cursor-not-allowed disabled:opacity-70"
+          className="ui-btn ui-btn-primary w-full px-4 py-2.5 text-white disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isSubmitting ? "Signing in..." : "Login"}
         </button>
