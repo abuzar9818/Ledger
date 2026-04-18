@@ -8,7 +8,7 @@ import AdminPage from "../pages/admin/AdminPage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import NotFoundPage from "../pages/NotFoundPage";
-import ProtectedRoute, { PublicOnlyRoute, RoleRedirect } from "./ProtectedRoute";
+import ProtectedRoute, { PublicOnlyRoute } from "./ProtectedRoute";
 
 function AppRoutes() {
   return (
