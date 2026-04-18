@@ -106,7 +106,7 @@ function TransferPage() {
       title="Transfer Money"
       subtitle="Move funds between accounts securely."
     >
-      <div className="max-w-2xl rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="max-w-2xl ui-surface rounded-3xl p-5 sm:p-6">
         {error ? (
           <p className="mb-4 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
             {error}
@@ -130,7 +130,7 @@ function TransferPage() {
               value={formData.fromAccount}
               onChange={handleChange}
               disabled={isLoadingAccounts}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
             >
               {accounts.map((account) => (
                 <option key={account._id} value={account._id}>
@@ -151,7 +151,7 @@ function TransferPage() {
               value={formData.toAccount}
               onChange={handleChange}
               placeholder="Enter receiver account id"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
             />
           </div>
 
@@ -168,7 +168,7 @@ function TransferPage() {
               value={formData.amount}
               onChange={handleChange}
               placeholder="0.00"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
             />
           </div>
 
@@ -181,7 +181,7 @@ function TransferPage() {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
             >
               {categories.map((category) => (
                 <option key={category} value={category}>
@@ -194,7 +194,7 @@ function TransferPage() {
           <button
             type="submit"
             disabled={!canSubmit}
-            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+            className="rounded-xl bg-gradient-to-r from-slate-900 to-teal-900 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-slate-900/15 transition hover:from-slate-800 hover:to-teal-800 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSubmitting ? "Submitting..." : "Submit Transaction"}
           </button>

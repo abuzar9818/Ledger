@@ -13,7 +13,7 @@ function TimelineItem({ tx, accountIds }) {
   return (
     <li className="relative pl-8">
       <span className="absolute left-2 top-2 h-3 w-3 rounded-full bg-slate-700" />
-      <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="ui-surface rounded-2xl p-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm font-semibold text-slate-900">{directionLabel} {Number(tx.amount).toLocaleString("en-IN")}</p>
           <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">{tx.status}</span>
@@ -90,7 +90,7 @@ function TransactionHistoryPage() {
       title="Transaction History"
       subtitle="Review your money movement timeline."
     >
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="ui-surface rounded-3xl p-4 sm:p-5">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <label htmlFor="categoryFilter" className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-600">
@@ -100,7 +100,7 @@ function TransactionHistoryPage() {
               id="categoryFilter"
               value={categoryFilter}
               onChange={(event) => setCategoryFilter(event.target.value)}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
             >
               {categories.map((category) => (
                 <option key={category} value={category}>
@@ -118,7 +118,7 @@ function TransactionHistoryPage() {
               id="statusFilter"
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
             >
               {statuses.map((status) => (
                 <option key={status} value={status}>
@@ -137,7 +137,7 @@ function TransactionHistoryPage() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, index) => (
-            <div key={index} className="h-24 animate-pulse rounded-lg border border-slate-200 bg-white" />
+            <div key={index} className="h-24 animate-pulse rounded-2xl border border-slate-200 bg-white/80" />
           ))}
         </div>
       ) : (
