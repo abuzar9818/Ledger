@@ -11,10 +11,10 @@ function DashboardSidebar({ role = "USER" }) {
   const links = role === "ADMIN" ? primaryLinks : primaryLinks.filter((item) => item.to !== "/admin");
 
   return (
-    <aside className="hidden w-64 flex-col border-r border-slate-200 bg-white lg:flex">
-      <div className="border-b border-slate-200 px-6 py-5">
-        <h1 className="text-xl font-bold text-slate-900">Ledger</h1>
-        <p className="mt-1 text-xs uppercase tracking-wide text-slate-500">Financial Workspace</p>
+    <aside className="hidden w-64 flex-col border-r border-slate-800 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900 text-white lg:flex">
+      <div className="border-b border-slate-700/70 px-6 py-5">
+        <h1 className="text-xl font-bold text-white">Ledger</h1>
+        <p className="mt-1 text-xs uppercase tracking-wide text-slate-300">Financial Workspace</p>
       </div>
 
       <nav className="flex-1 space-y-2 px-4 py-5">
@@ -26,8 +26,8 @@ function DashboardSidebar({ role = "USER" }) {
               [
                 "block rounded-md px-3 py-2 text-sm font-medium transition",
                 isActive
-                  ? "bg-slate-900 text-white"
-                  : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
+                  ? "bg-gradient-to-r from-teal-500 to-amber-400 text-slate-900"
+                  : "text-slate-200 hover:bg-slate-800 hover:text-white",
               ].join(" ")
             }
           >
