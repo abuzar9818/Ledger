@@ -1,13 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import AccountCard from "../../components/dashboard/AccountCard";
 import AccountCardSkeleton from "../../components/dashboard/AccountCardSkeleton";
-import DashboardSidebar from "../../components/dashboard/DashboardSidebar";
-import DashboardTopbar from "../../components/dashboard/DashboardTopbar";
-import { useAuth } from "../../context/AuthContext";
+import DashboardLayout from "../../components/dashboard/DashboardLayout";
 import api from "../../services/api";
 
 function DashboardPage() {
-  const { user } = useAuth();
   const [accounts, setAccounts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -55,46 +52,39 @@ function DashboardPage() {
   );
 
   return (
-    <section className="-mx-4 -my-6 min-h-[calc(100vh-3rem)] bg-slate-100 lg:-mx-6">
-      <div className="flex min-h-[calc(100vh-3rem)]">
-        <DashboardSidebar role={user?.role} />
-
-        <div className="flex flex-1 flex-col">
-          <DashboardTopbar />
-
-          <main className="flex-1 space-y-6 p-4 sm:p-6">
-            <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-slate-500">Total Portfolio Balance</p>
-              <p className="mt-2 text-3xl font-bold text-slate-900">
-                {new Intl.NumberFormat("en-IN", {
-                  style: "currency",
-                  currency: "INR",
-                  maximumFractionDigits: 2,
-                }).format(totalBalance)}
-              </p>
-            </div>
-
-            {error ? (
-              <p className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-                {error}
-              </p>
-            ) : null}
-
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {isLoading
-                ? Array.from({ length: 6 }).map((_, index) => <AccountCardSkeleton key={index} />)
-                : accounts.map((account) => <AccountCard key={account._id} account={account} />)}
-            </div>
-
-            {!isLoading && accounts.length === 0 && !error ?
-              <p className="rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
-                No accounts found. Create your first account to start tracking balances.
-              </p>
-            : null}
-          </main>
-        </div>
+    <DashboardLayout
+      title="Dashboard"
+      subtitle="Track your accounts and balances in real time."
+    >
+      <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <p className="text-xs uppercase tracking-wide text-slate-500">Total Portfolio Balance</p>
+        <p className="mt-2 text-3xl font-bold text-slate-900">
+          {new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 2,
+          }).format(totalBalance)}
+        </p>
       </div>
-    </section>
+
+      {error ? (
+        <p className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          {error}
+        </p>
+      ) : null}
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {isLoading
+          ? Array.from({ length: 6 }).map((_, index) => <AccountCardSkeleton key={index} />)
+          : accounts.map((account) => <AccountCard key={account._id} account={account} />)}
+      </div>
+
+      {!isLoading && accounts.length === 0 && !error ? (
+        <p className="rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+          No accounts found. Create your first account to start tracking balances.
+        </p>
+      ) : null}
+    </DashboardLayout>
   );
 }
 
