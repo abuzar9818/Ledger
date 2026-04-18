@@ -1,8 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 function Navbar() {
+  const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/auth/login", { replace: true });
+  };
 
   return (
     <header className="bg-slate-900 text-white">
@@ -25,7 +31,7 @@ function Navbar() {
 
               <button
                 type="button"
-                onClick={logout}
+                onClick={handleLogout}
                 className="rounded border border-slate-700 px-2 py-1 transition hover:border-slate-500"
               >
                 Logout
