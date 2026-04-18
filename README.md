@@ -221,7 +221,7 @@ Users cannot reopen closed accounts directly. They submit a reopen request, and 
 
 ```text
 server.js
-src/
+Backend/
 ├── app.js
 ├── config/
 │   ├── db.js
