@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-function DashboardTopbar() {
+function DashboardTopbar({ title = "Dashboard", subtitle = "Track your accounts and balances in real time." }) {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
@@ -16,8 +16,8 @@ function DashboardTopbar() {
     <header className="border-b border-slate-200 bg-white px-4 py-3 sm:px-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Dashboard</h2>
-          <p className="text-sm text-slate-600">Track your accounts and balances in real time.</p>
+          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+          <p className="text-sm text-slate-600">{subtitle}</p>
         </div>
 
         <div className="relative">
