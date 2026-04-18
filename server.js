@@ -1,7 +1,7 @@
 require('dotenv').config();
-const app=require('./src/app');
-const connectDB=require('./src/config/db');
-const scheduledTransactionService=require('./src/services/scheduledTransactionService');
+const app=require('./Backend/app');
+const connectDB=require('./Backend/config/db');
+const scheduledTransactionService=require('./Backend/services/scheduledTransactionService');
 
 connectDB();
 scheduledTransactionService.startScheduledTransactionCron();
