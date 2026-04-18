@@ -4,11 +4,24 @@ import api from "../../services/api";
 
 const categories = ["ALL", "TRANSFER", "FOOD", "RENT", "SALARY", "OTHER"];
 const statuses = ["ALL", "PENDING", "COMPLETED", "FAILED", "REVERSED"];
+const REVERSAL_WINDOW_MS = 60 * 1000;
 
-function TimelineItem({ tx, accountIds }) {
+function canReverseTransaction(tx, accountIds) {
+  const isOutgoing = accountIds.has(tx.fromaccount);
+  const isCompleted = tx.status === "COMPLETED";
+  const createdAtMs = new Date(tx.createdAt).getTime();
+  const ageMs = Date.now() - createdAtMs;
+  const withinWindow = ageMs >= 0 && ageMs <= REVERSAL_WINDOW_MS;
+
+  return isOutgoing && isCompleted && withinWindow;
+}
+
+function TimelineItem({ tx, accountIds, onReverse, reversingId }) {
   const isOutgoing = accountIds.has(tx.fromaccount);
   const directionLabel = isOutgoing ? "Sent" : "Received";
   const directionColor = isOutgoing ? "text-rose-600" : "text-emerald-600";
+  const showReverseButton = canReverseTransaction(tx, accountIds);
+  const isReversing = reversingId === tx._id;
 
   return (
     <li className="relative pl-8">
@@ -16,7 +29,19 @@ function TimelineItem({ tx, accountIds }) {
       <div className="ui-surface rounded-2xl p-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm font-semibold text-slate-900">{directionLabel} {Number(tx.amount).toLocaleString("en-IN")}</p>
-          <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">{tx.status}</span>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">{tx.status}</span>
+            {showReverseButton ? (
+              <button
+                type="button"
+                onClick={() => onReverse(tx._id)}
+                disabled={isReversing}
+                className="rounded-md border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isReversing ? "Reversing..." : "Reverse"}
+              </button>
+            ) : null}
+          </div>
         </div>
 
         <div className="mt-2 grid gap-1 text-xs text-slate-600 sm:grid-cols-2">
@@ -41,6 +66,8 @@ function TransactionHistoryPage() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reversingId, setReversingId] = useState("");
+  const [actionMessage, setActionMessage] = useState({ type: "", text: "" });
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -76,6 +103,35 @@ function TransactionHistoryPage() {
 
     fetchTransactions();
   }, [categoryFilter, statusFilter]);
+
+  const handleReverse = async (transactionId) => {
+    setActionMessage({ type: "", text: "" });
+    setReversingId(transactionId);
+
+    try {
+      await api.post(`/transactions/${transactionId}/reverse`);
+
+      setTransactions((prevTransactions) =>
+        prevTransactions.map((tx) =>
+          tx._id === transactionId
+            ? {
+                ...tx,
+                status: "REVERSED",
+              }
+            : tx
+        )
+      );
+
+      setActionMessage({ type: "success", text: "Transaction reversed successfully." });
+    } catch (requestError) {
+      setActionMessage({
+        type: "error",
+        text: requestError.response?.data?.error || "Unable to reverse this transaction.",
+      });
+    } finally {
+      setReversingId("");
+    }
+  };
 
   const filteredTransactions = useMemo(() => {
     if (statusFilter === "ALL") {
@@ -134,6 +190,19 @@ function TransactionHistoryPage() {
         <p className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>
       ) : null}
 
+      {actionMessage.text ? (
+        <p
+          className={[
+            "rounded-md px-3 py-2 text-sm",
+            actionMessage.type === "success"
+              ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border border-rose-200 bg-rose-50 text-rose-700",
+          ].join(" ")}
+        >
+          {actionMessage.text}
+        </p>
+      ) : null}
+
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, index) => (
@@ -143,7 +212,13 @@ function TransactionHistoryPage() {
       ) : (
         <ol className="relative space-y-4 before:absolute before:bottom-0 before:left-[0.82rem] before:top-0 before:w-px before:bg-slate-300">
           {filteredTransactions.map((tx) => (
-            <TimelineItem key={tx._id} tx={tx} accountIds={accountIds} />
+            <TimelineItem
+              key={tx._id}
+              tx={tx}
+              accountIds={accountIds}
+              onReverse={handleReverse}
+              reversingId={reversingId}
+            />
           ))}
         </ol>
       )}
