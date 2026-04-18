@@ -47,23 +47,28 @@ const faqItems = [
 
 function HomePage() {
   return (
-    <div className="space-y-20 pb-14 pt-3">
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 px-6 py-14 text-white shadow-2xl sm:px-10 sm:py-16">
+    <div className="space-y-14 pb-12 pt-2 sm:pt-3">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 px-6 py-12 text-white shadow-2xl sm:px-10 sm:py-14">
         <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-teal-300/20 blur-3xl" />
         <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-amber-300/20 blur-3xl" />
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] opacity-30" />
 
         <div className="relative grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <div className="max-w-3xl">
-            <p className="inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-200">
-              Ledger Platform
-            </p>
-            <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
-              A High-Trust Financial Workspace For Modern Ledger Operations
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-200">
+                Ledger Platform
+              </p>
+              <p className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-slate-100">
+                Simple, clear, and built for daily banking tasks
+              </p>
+            </div>
+            <h1 className="mt-4 max-w-2xl text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
+              Banking UI That Feels Clean, Calm, and Easy To Navigate
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-200/95 sm:text-lg">
-              Manage accounts, transfer funds, and track transaction outcomes from a clean interface
-              designed for speed, clarity, and confidence.
+              Manage accounts, transfer money, and review transactions from one place with a visual
+              interface that feels product-focused, not overloaded.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -87,18 +92,53 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-            <div className="rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
-              <p className="text-2xl font-bold">99.95%</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-slate-200">Reliable Uptime</p>
-            </div>
-            <div className="rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
-              <p className="text-2xl font-bold">Real-Time</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-slate-200">Balance Visibility</p>
-            </div>
-            <div className="rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
-              <p className="text-2xl font-bold">Secure</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-slate-200">Token Auth Flows</p>
+          <div className="ui-surface rounded-3xl bg-white/10 p-4 text-white backdrop-blur-sm">
+            <div className="rounded-2xl border border-white/15 bg-slate-950/25 p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-teal-200">Preview</p>
+                  <h2 className="mt-2 text-xl font-bold">How It Feels</h2>
+                </div>
+                <div className="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100">
+                  Smooth UX
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                {[
+                  {
+                    title: "Readable Dashboard",
+                    description: "Clear cards and hierarchy for balances and actions.",
+                  },
+                  {
+                    title: "Quick Transfers",
+                    description: "A direct flow to send money without extra steps.",
+                  },
+                  {
+                    title: "Timeline History",
+                    description: "Find transactions quickly using category and status filters.",
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="rounded-xl bg-white/10 p-4">
+                    <p className="text-sm font-semibold text-white">{item.title}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-slate-200">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 rounded-xl bg-white/10 p-4">
+                <p className="text-xs uppercase tracking-wide text-slate-200">User Experience</p>
+                <div className="mt-3 space-y-3 text-sm text-slate-100">
+                  <div className="flex items-center justify-between gap-4">
+                    <span>Minimal visual noise</span>
+                    <span className="font-semibold text-emerald-200">Improved</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span>Better content spacing</span>
+                    <span className="font-semibold text-teal-200">Balanced</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -106,21 +146,21 @@ function HomePage() {
 
       <section className="grid gap-4 lg:grid-cols-3">
         <article className="ui-surface rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">01</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">Experience</p>
           <h2 className="mt-2 text-xl font-bold text-slate-900">Secure Login Flow</h2>
           <p className="mt-2 text-sm text-slate-600">
             Clear entry points to login and registration keep the first step obvious and fast.
           </p>
         </article>
         <article className="ui-surface rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">02</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">Navigation</p>
           <h2 className="mt-2 text-xl font-bold text-slate-900">Clean App Navigation</h2>
           <p className="mt-2 text-sm text-slate-600">
             Jump from the home page into dashboard, transfer money, or view transaction history.
           </p>
         </article>
         <article className="ui-surface rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">03</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">Design</p>
           <h2 className="mt-2 text-xl font-bold text-slate-900">Designed For Clarity</h2>
           <p className="mt-2 text-sm text-slate-600">
             Spacious cards, gradients, and readable sections make the product feel more premium.
@@ -147,7 +187,7 @@ function HomePage() {
       </section>
 
       <section>
-        <div className="mb-5 flex items-end justify-between gap-3">
+        <div className="mb-4 flex items-end justify-between gap-3">
           <h2 className="text-2xl font-bold text-slate-900">Why Teams Pick Ledger</h2>
           <p className="text-sm text-slate-500">Reliable, transparent, and practical.</p>
         </div>
@@ -184,10 +224,10 @@ function HomePage() {
       <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="ui-surface rounded-3xl p-6 sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">What You Get</p>
-          <h2 className="mt-2 text-3xl font-bold text-slate-900">A crisp, readable product feel</h2>
+          <h2 className="mt-2 text-3xl font-bold text-slate-900">A home page that actually feels like home</h2>
           <p className="mt-3 text-sm leading-relaxed text-slate-600">
-            The layout uses depth, gradients, and spacious cards so the application feels like a modern
-            financial tool instead of a starter template.
+            This landing surface is now focused on flow and visual feel, not abstract metrics.
+            It should read like a product intro page before users enter the app.
           </p>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">

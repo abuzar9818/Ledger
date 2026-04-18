@@ -126,7 +126,7 @@ function LoginPage() {
         <Link to="/auth/register" className="font-medium text-slate-900 hover:underline">
           Create account
         </Link>
-      </p>
+        </p>
 
       <div className="mt-6 border-t border-slate-200 pt-4">
         <Link
