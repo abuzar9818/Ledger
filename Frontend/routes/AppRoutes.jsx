@@ -5,6 +5,7 @@ import HomePage from "../pages/HomePage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 import TransferPage from "../pages/dashboard/TransferPage";
 import TransactionHistoryPage from "../pages/dashboard/TransactionHistoryPage";
+import ScheduledTransfersPage from "../pages/dashboard/ScheduledTransfersPage";
 import AdminPage from "../pages/admin/AdminPage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
@@ -22,6 +23,7 @@ function AppRoutes() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/dashboard/transfer" element={<TransferPage />} />
         <Route path="/dashboard/transactions" element={<TransactionHistoryPage />} />
+        <Route path="/dashboard/scheduled-transfers" element={<ScheduledTransfersPage />} />
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
