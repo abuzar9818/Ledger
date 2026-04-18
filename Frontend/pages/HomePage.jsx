@@ -2,348 +2,120 @@ import { Link } from "react-router-dom";
 
 const featureCards = [
   {
-    title: "Real-Time Account Overview",
-    description: "Track all your accounts with live balance snapshots and clear status indicators.",
+    title: "Simple Dashboard",
+    description: "See balances, account status, and quick actions without hunting through screens.",
   },
   {
-    title: "Fast Money Movement",
-    description: "Create categorized transfers in seconds with robust transaction validation.",
+    title: "Transfers In Minutes",
+    description: "Send immediate transfers or set scheduled transfers from the same workspace.",
   },
   {
-    title: "Actionable History",
-    description: "Review timeline-based transaction history with quick category and status filtering.",
+    title: "Clear History",
+    description: "Browse transaction activity with filters that stay readable even on mobile.",
   },
 ];
 
 const workflowSteps = [
   {
-    title: "Authenticate Once",
-    description: "Sign in with a secure token flow and land on the right workspace instantly.",
+    title: "Sign In",
+    description: "Secure auth keeps the entry fast while landing each role in the right workspace.",
   },
   {
-    title: "Move Money Confidently",
-    description: "Submit transfers with sender, receiver, category, and validation baked in.",
+    title: "Move Funds",
+    description: "Use transfer and scheduling flows that guide you with clear form fields.",
   },
   {
-    title: "Track Every Change",
-    description: "Read your transaction timeline and inspect balances without leaving the app.",
-  },
-];
-
-const faqItems = [
-  {
-    question: "Can I switch between dashboard areas quickly?",
-    answer: "Yes. The navigation is designed to keep dashboard, transfer, and history surfaces one click away.",
-  },
-  {
-    question: "Does the app show account balances?",
-    answer: "Yes. The dashboard loads your accounts and fetches balances per account for clear visibility.",
-  },
-  {
-    question: "Is login and register available from the home page?",
-    answer: "Yes. The navbar and hero both include clear entry points to login and registration.",
+    title: "Track Activity",
+    description: "Review every transaction and schedule status from one consistent interface.",
   },
 ];
 
 function HomePage() {
   return (
-    <div className="space-y-14 pb-12 pt-2 sm:pt-3">
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 px-6 py-12 text-white shadow-2xl sm:px-10 sm:py-14">
-        <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-teal-300/20 blur-3xl" />
-        <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-amber-300/20 blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] opacity-30" />
+    <div className="space-y-8 pb-12 pt-2">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 px-6 py-10 text-white shadow-2xl sm:px-10 sm:py-14">
+        <div className="absolute -left-20 -top-20 h-60 w-60 rounded-full bg-teal-300/20 blur-3xl" />
+        <div className="absolute -bottom-24 right-0 h-72 w-72 rounded-full bg-amber-300/20 blur-3xl" />
 
-        <div className="relative grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
-          <div className="max-w-3xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-200">
-                Ledger Platform
-              </p>
-              <p className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-slate-100">
-                Simple, clear, and built for daily banking tasks
-              </p>
-            </div>
-            <h1 className="mt-4 max-w-2xl text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
-              Banking UI That Feels Clean, Calm, and Easy To Navigate
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-200/95 sm:text-lg">
-              Manage accounts, transfer money, and review transactions from one place with a visual
-              interface that feels product-focused, not overloaded.
+        <div className="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div>
+            <p className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-100">
+              Modern Ledger UX
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                to="/auth/register"
-                className="rounded-md bg-gradient-to-r from-teal-400 to-amber-300 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:from-teal-300 hover:to-amber-200"
-              >
+            <h1 className="mt-4 max-w-2xl text-4xl font-black leading-tight sm:text-5xl">
+              Money management without visual noise
+            </h1>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-100 sm:text-base">
+              Ledger now gives you a cleaner journey from home to dashboard, transfer, scheduling, and history.
+            </p>
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link to="/auth/register" className="ui-btn rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100">
                 Create Account
               </Link>
-              <Link
-                to="/auth/login"
-                className="rounded-md border border-white/30 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
-              >
+              <Link to="/auth/login" className="ui-btn rounded-lg border border-white/30 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10">
                 Login
               </Link>
-              <Link
-                to="/dashboard"
-                className="rounded-md border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
-              >
-                Go To Dashboard
-              </Link>
             </div>
           </div>
 
-          <div className="ui-surface rounded-3xl bg-white/10 p-4 text-white backdrop-blur-sm">
-            <div className="rounded-2xl border border-white/15 bg-slate-950/25 p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-teal-200">Preview</p>
-                  <h2 className="mt-2 text-xl font-bold">How It Feels</h2>
-                </div>
-                <div className="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100">
-                  Smooth UX
-                </div>
+          <div className="grid gap-3">
+            {[
+              "Better spacing and readability",
+              "Cleaner auth and dashboard flow",
+              "Consistent actions on desktop and mobile",
+            ].map((item) => (
+              <div key={item} className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
+                <p className="text-sm font-medium text-white">{item}</p>
               </div>
-
-              <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                {[
-                  {
-                    title: "Readable Dashboard",
-                    description: "Clear cards and hierarchy for balances and actions.",
-                  },
-                  {
-                    title: "Quick Transfers",
-                    description: "A direct flow to send money without extra steps.",
-                  },
-                  {
-                    title: "Timeline History",
-                    description: "Find transactions quickly using category and status filters.",
-                  },
-                ].map((item) => (
-                  <div key={item.title} className="rounded-xl bg-white/10 p-4">
-                    <p className="text-sm font-semibold text-white">{item.title}</p>
-                    <p className="mt-1 text-xs leading-relaxed text-slate-200">{item.description}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 rounded-xl bg-white/10 p-4">
-                <p className="text-xs uppercase tracking-wide text-slate-200">User Experience</p>
-                <div className="mt-3 space-y-3 text-sm text-slate-100">
-                  <div className="flex items-center justify-between gap-4">
-                    <span>Minimal visual noise</span>
-                    <span className="font-semibold text-emerald-200">Improved</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span>Better content spacing</span>
-                    <span className="font-semibold text-teal-200">Balanced</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-3">
-        <article className="ui-surface rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">Experience</p>
-          <h2 className="mt-2 text-xl font-bold text-slate-900">Secure Login Flow</h2>
-          <p className="mt-2 text-sm text-slate-600">
-            Clear entry points to login and registration keep the first step obvious and fast.
-          </p>
-        </article>
-        <article className="ui-surface rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">Navigation</p>
-          <h2 className="mt-2 text-xl font-bold text-slate-900">Clean App Navigation</h2>
-          <p className="mt-2 text-sm text-slate-600">
-            Jump from the home page into dashboard, transfer money, or view transaction history.
-          </p>
-        </article>
-        <article className="ui-surface rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">Design</p>
-          <h2 className="mt-2 text-xl font-bold text-slate-900">Designed For Clarity</h2>
-          <p className="mt-2 text-sm text-slate-600">
-            Spacious cards, gradients, and readable sections make the product feel more premium.
-          </p>
-        </article>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <article className="ui-surface rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">Accounts</p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">Clear portfolio overview</p>
-          <p className="mt-2 text-sm text-slate-600">See all your accounts and balances in one readable view.</p>
-        </article>
-        <article className="ui-surface rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">Transfers</p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">Fast money movement</p>
-          <p className="mt-2 text-sm text-slate-600">Create categorized transactions with a simple, guided flow.</p>
-        </article>
-        <article className="ui-surface rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">History</p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">Readable timelines</p>
-          <p className="mt-2 text-sm text-slate-600">Filter by status and category without losing context.</p>
-        </article>
+        {featureCards.map((card) => (
+          <article key={card.title} className="ui-card p-5">
+            <h2 className="text-lg font-bold text-slate-900">{card.title}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">{card.description}</p>
+          </article>
+        ))}
       </section>
 
-      <section>
-        <div className="mb-4 flex items-end justify-between gap-3">
-          <h2 className="text-2xl font-bold text-slate-900">Why Teams Pick Ledger</h2>
-          <p className="text-sm text-slate-500">Reliable, transparent, and practical.</p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          {featureCards.map((card) => (
-            <article key={card.title} className="ui-surface rounded-2xl p-5 transition hover:-translate-y-1">
-              <h3 className="text-lg font-semibold text-slate-900">{card.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{card.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="ui-surface rounded-3xl p-6 sm:p-8">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <section className="ui-card p-6 sm:p-7">
+        <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">One Platform, End-to-End Flow</h2>
-            <p className="mt-1 text-sm text-slate-600">Everything is arranged to keep the financial journey simple.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">User Flow</p>
+            <h2 className="mt-2 text-2xl font-bold text-slate-900">From sign-in to transaction clarity</h2>
           </div>
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Designed For Speed</span>
+          <Link to="/dashboard" className="ui-btn ui-btn-soft px-4 py-2 text-sm">
+            Open Dashboard
+          </Link>
         </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
+
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
           {workflowSteps.map((step, index) => (
-            <div key={step.title} className="rounded-xl bg-gradient-to-br from-slate-50 to-white p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Step 0{index + 1}</p>
+            <div key={step.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Step {index + 1}</p>
               <p className="mt-2 text-base font-semibold text-slate-900">{step.title}</p>
-              <p className="mt-2 text-sm font-medium text-slate-700">{step.description}</p>
+              <p className="mt-2 text-sm text-slate-600">{step.description}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="ui-surface rounded-3xl p-6 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">What You Get</p>
-          <h2 className="mt-2 text-3xl font-bold text-slate-900">A home page that actually feels like home</h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-600">
-            This landing surface is now focused on flow and visual feel, not abstract metrics.
-            It should read like a product intro page before users enter the app.
-          </p>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {[
-              "Polished hero section",
-              "Responsive navigation",
-              "Readable cards and states",
-              "Clear login entry points",
-            ].map((item) => (
-              <div key={item} className="rounded-xl bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800">
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="ui-surface rounded-3xl p-6 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600">Performance Snapshot</p>
-          <div className="mt-4 space-y-4">
-            {[
-              { label: "Account Visibility", value: "High" },
-              { label: "Transaction Clarity", value: "Strong" },
-              { label: "Action Confidence", value: "Fast" },
-            ].map((item) => (
-              <div key={item.label}>
-                <div className="mb-2 flex items-center justify-between text-sm">
-                  <span className="font-medium text-slate-700">{item.label}</span>
-                  <span className="font-semibold text-slate-900">{item.value}</span>
-                </div>
-                <div className="h-2 rounded-full bg-slate-200">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-teal-500 to-amber-400" style={{ width: item.value === "High" ? "88%" : item.value === "Strong" ? "92%" : "80%" }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="ui-surface rounded-3xl p-6 sm:p-8">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Customer Notes</p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-900">Why the interface feels easy to use</h2>
-          </div>
-          <p className="max-w-md text-sm text-slate-600">Built around clarity, hierarchy, and fast decision making.</p>
-        </div>
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          <div className="rounded-2xl bg-slate-50 p-5">
-            <p className="text-sm leading-relaxed text-slate-700">
-              “The dashboard tells you exactly where you are and what to do next. It feels more like a product than an admin panel.”
-            </p>
-            <p className="mt-4 text-sm font-semibold text-slate-900">Product Team Feedback</p>
-          </div>
-          <div className="rounded-2xl bg-slate-50 p-5">
-            <p className="text-sm leading-relaxed text-slate-700">
-              “The home page now clearly explains the value, and the buttons guide users straight into the right flow.”
-            </p>
-            <p className="mt-4 text-sm font-semibold text-slate-900">UI Review Note</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="ui-surface rounded-3xl p-6 sm:p-8">
+      <section className="rounded-3xl bg-gradient-to-r from-teal-700 via-slate-900 to-amber-500 px-6 py-9 text-white shadow-xl sm:px-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Quick Access</p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-900">Move around the product faster</h2>
-            <p className="mt-1 text-sm text-slate-600">Use these direct links to jump into the main workflow pages.</p>
+          <div className="max-w-xl">
+            <h2 className="text-2xl font-bold">Start with the improved experience</h2>
+            <p className="mt-2 text-sm text-slate-100">Create an account and explore the refreshed dashboard and transfer UX.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link to="/dashboard" className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">
-              Dashboard
+            <Link to="/auth/register" className="ui-btn rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100">
+              Register
             </Link>
-            <Link to="/dashboard/transfer" className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
-              Transfer Money
-            </Link>
-            <Link to="/dashboard/transactions" className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
-              Transactions
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="ui-surface rounded-3xl p-6 sm:p-8">
-        <h2 className="text-2xl font-bold text-slate-900">Frequently Asked Questions</h2>
-        <div className="mt-6 grid gap-4 lg:grid-cols-3">
-          {faqItems.map((item) => (
-            <article key={item.question} className="rounded-2xl bg-slate-50 p-5">
-              <h3 className="text-base font-semibold text-slate-900">{item.question}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.answer}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="rounded-3xl bg-gradient-to-r from-teal-600 via-slate-900 to-amber-500 px-6 py-10 text-white shadow-xl sm:px-10">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-100">Ready To Start</p>
-            <h2 className="mt-2 text-3xl font-bold">Create your account and get into the workspace.</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-100/95">
-              Login or register from the navbar, then move directly into your dashboard, transfer flow, and transaction history.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to="/auth/register"
-              className="rounded-md bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
-            >
-              Create Account
-            </Link>
-            <Link
-              to="/auth/login"
-              className="rounded-md border border-white/40 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
-            >
-              Login
+            <Link to="/auth/login" className="ui-btn rounded-lg border border-white/40 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10">
+              Sign In
             </Link>
           </div>
         </div>
