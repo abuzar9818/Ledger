@@ -14,9 +14,7 @@ function AppRoutes() {
       <Route path="/" element={<RoleRedirect />} />
 
       <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
-        <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-        </Route>
+        <Route path="/dashboard" element={<DashboardPage />} />
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
