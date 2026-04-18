@@ -146,12 +146,19 @@ Supported transaction categories:
 | --- | --- | --- | --- |
 | POST | `/api/scheduled-transactions` | USER | Create a recurring transfer |
 | GET | `/api/scheduled-transactions/my-schedules` | USER | List the user’s scheduled transfers |
+| PUT | `/api/scheduled-transactions/:id` | USER | Edit a future pending scheduled transfer |
+| PATCH | `/api/scheduled-transactions/:id/cancel` | USER | Cancel a future pending scheduled transfer |
 
 Supported recurrence values:
 
 - `DAILY`
 - `WEEKLY`
 - `MONTHLY`
+
+Scheduled transfer lifecycle notes:
+
+- Only schedules owned by the current user can be edited or cancelled.
+- Only `PENDING` schedules with `nextRunAt` in the future are eligible for edit/cancel actions.
 
 ### Reports — `/reports`
 
@@ -276,4 +283,4 @@ Backend/
 
 ISC
 
-Last Updated: 10 April 2026
+Last Updated: 19 April 2026
