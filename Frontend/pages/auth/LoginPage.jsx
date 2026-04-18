@@ -60,18 +60,18 @@ function LoginPage() {
       <p className="mt-2 text-sm text-slate-600">Sign in to continue to your ledger dashboard.</p>
 
       {apiSuccess ? (
-        <p className="mt-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <p className="mt-5 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
           {apiSuccess}
         </p>
       ) : null}
 
       {apiError ? (
-        <p className="mt-4 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+        <p className="mt-5 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
           {apiError}
         </p>
       ) : null}
 
-      <form className="mt-5 space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div>
           <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
             Email
@@ -79,7 +79,7 @@ function LoginPage() {
           <input
             id="email"
             type="email"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+            className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
             {...register("email", {
               required: "Email is required",
               pattern: {
@@ -98,7 +98,7 @@ function LoginPage() {
           <input
             id="password"
             type="password"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+            className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
             {...register("password", {
               required: "Password is required",
               minLength: {
@@ -115,13 +115,13 @@ function LoginPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-md bg-slate-900 px-4 py-2 text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+          className="w-full rounded-xl bg-gradient-to-r from-slate-900 to-teal-900 px-4 py-2.5 text-white shadow-lg shadow-slate-900/15 transition hover:from-slate-800 hover:to-teal-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isSubmitting ? "Signing in..." : "Login"}
         </button>
       </form>
 
-      <p className="mt-4 text-sm text-slate-600">
+      <p className="mt-5 text-sm text-slate-600">
         New here?{" "}
         <Link to="/auth/register" className="font-medium text-slate-900 hover:underline">
           Create account
