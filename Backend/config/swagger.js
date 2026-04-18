@@ -1525,6 +1525,140 @@ const swaggerDocument = {
                 }
             }
         },
+        "/api/scheduled-transactions/{id}": {
+            put: {
+                tags: ["Scheduled Transactions"],
+                summary: "Update a future pending scheduled transaction",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        in: "path",
+                        name: "id",
+                        required: true,
+                        schema: { type: "string" }
+                    }
+                ],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    fromAccount: { type: "string" },
+                                    toAccount: { type: "string" },
+                                    amount: { type: "number" },
+                                    recurrence: {
+                                        type: "string",
+                                        enum: ["DAILY", "WEEKLY", "MONTHLY"]
+                                    },
+                                    startDate: { type: "string", format: "date-time" }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    "200": {
+                        description: "Scheduled transaction updated",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ScheduledTransactionResponse" }
+                            }
+                        }
+                    },
+                    "400": {
+                        description: "Validation error or schedule is not editable",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            }
+                        }
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            }
+                        }
+                    },
+                    "403": {
+                        description: "Forbidden",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            }
+                        }
+                    },
+                    "404": {
+                        description: "Schedule or account not found",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/scheduled-transactions/{id}/cancel": {
+            patch: {
+                tags: ["Scheduled Transactions"],
+                summary: "Cancel a future pending scheduled transaction",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        in: "path",
+                        name: "id",
+                        required: true,
+                        schema: { type: "string" }
+                    }
+                ],
+                responses: {
+                    "200": {
+                        description: "Scheduled transaction cancelled",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ScheduledTransactionResponse" }
+                            }
+                        }
+                    },
+                    "400": {
+                        description: "Schedule is not cancellable",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            }
+                        }
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            }
+                        }
+                    },
+                    "403": {
+                        description: "Forbidden",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            }
+                        }
+                    },
+                    "404": {
+                        description: "Scheduled transaction not found",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/reports/monthly-summary": {
             get: {
                 tags: ["Reports"],
