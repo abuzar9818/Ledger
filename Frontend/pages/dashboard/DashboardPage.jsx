@@ -57,7 +57,7 @@ function DashboardPage() {
       title="Dashboard"
       subtitle="Track your accounts and balances in real time."
     >
-      <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="ui-surface rounded-3xl p-5 sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">Portfolio Summary</p>
           <p className="mt-2 text-3xl font-black text-slate-900">
@@ -76,7 +76,7 @@ function DashboardPage() {
           {[
             { label: "Accounts", value: accounts.length, tone: "teal" },
             { label: "Active", value: accounts.filter((account) => account.status === "ACTIVE").length, tone: "amber" },
-            { label: "Completed", value: "Live", tone: "slate" },
+            { label: "Workspace", value: "Ready", tone: "slate" },
           ].map((item) => (
             <div key={item.label} className="ui-surface rounded-2xl p-4">
               <p className="text-xs uppercase tracking-wide text-slate-500">{item.label}</p>
@@ -105,7 +105,7 @@ function DashboardPage() {
         <div className="ui-surface rounded-2xl p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Current Status</p>
           <h3 className="mt-2 text-lg font-bold text-slate-900">Workspace Ready</h3>
-          <p className="mt-2 text-sm text-slate-600">Your dashboard is set up to support account insights and money movement.</p>
+          <p className="mt-2 text-sm text-slate-600">Your dashboard now has clearer spacing, cleaner cards, and improved action flow.</p>
         </div>
       </div>
 
