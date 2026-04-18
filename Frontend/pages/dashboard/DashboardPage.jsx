@@ -86,11 +86,16 @@ function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Link to="/dashboard/transfer" className="ui-surface rounded-2xl p-5 transition hover:-translate-y-1 hover:border-teal-300">
           <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">Quick Action</p>
           <h3 className="mt-2 text-lg font-bold text-slate-900">Transfer Money</h3>
           <p className="mt-2 text-sm text-slate-600">Send money from one account to another with one clean form.</p>
+        </Link>
+        <Link to="/dashboard/scheduled-transfers" className="ui-surface rounded-2xl p-5 transition hover:-translate-y-1 hover:border-cyan-300">
+          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-600">Automation</p>
+          <h3 className="mt-2 text-lg font-bold text-slate-900">Scheduled Transfers</h3>
+          <p className="mt-2 text-sm text-slate-600">Set recurring transfers with daily, weekly, or monthly recurrence.</p>
         </Link>
         <Link to="/dashboard/transactions" className="ui-surface rounded-2xl p-5 transition hover:-translate-y-1 hover:border-amber-300">
           <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">Quick Action</p>
