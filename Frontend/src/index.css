@@ -30,6 +30,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -121,4 +125,23 @@ h6 {
 .ui-btn-soft:hover {
   background: #f1f5f9;
   border-color: #94a3b8;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 520ms ease both;
+}
+
+.animate-fade-up-delay {
+  animation: fadeUp 700ms ease both;
 }
