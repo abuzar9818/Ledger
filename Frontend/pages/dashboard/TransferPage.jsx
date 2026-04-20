@@ -85,6 +85,8 @@ function TransferPage() {
         amount: Number(formData.amount),
         category: formData.category,
         idempotencyKey: createIdempotencyKey(),
+      }, {
+        timeout: 30000,
       });
 
       setSuccess("Transfer submitted successfully.");
@@ -95,7 +97,15 @@ function TransferPage() {
         category: "TRANSFER",
       }));
     } catch (requestError) {
-      setError(requestError.response?.data?.error || "Failed to submit transfer.");
+      if (requestError.code === "ECONNABORTED") {
+        setError("Transfer request timed out. The transaction may still complete, so check transaction history before retrying.");
+      } else {
+        setError(
+          requestError.response?.data?.error ||
+          requestError.response?.data?.message ||
+          "Failed to submit transfer."
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }
