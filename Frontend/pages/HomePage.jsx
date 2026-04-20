@@ -308,15 +308,15 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-6 rounded-[2rem] bg-gradient-to-br from-slate-950 via-teal-950 to-teal-700 px-5 py-8 text-white shadow-2xl sm:px-8 sm:py-10 lg:grid-cols-[0.95fr_1.05fr]" id="faq">
-        <div className="rounded-2xl border border-white/15 bg-white/10 p-6 backdrop-blur-sm sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-100">FAQ</p>
-          <h2 className="mt-2 text-3xl font-black text-white">Common inquiries</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-100">
+      <section className="grid gap-6 rounded-[2rem] bg-white px-5 py-8 shadow-xl ring-1 ring-slate-200 sm:px-8 sm:py-10 lg:grid-cols-[0.95fr_1.05fr]" id="faq">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">FAQ</p>
+          <h2 className="mt-2 text-3xl font-black text-slate-900">Common inquiries</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-600">
             Everything you need to know about using the Ledger app experience.
           </p>
 
-          <div className="mt-6 overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-2">
+          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2">
             <img
               src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80"
               alt="Mobile finance app dashboard"
@@ -329,7 +329,7 @@ function HomePage() {
           {faqItems.map((item, index) => (
             <motion.article
               key={item.question}
-              className="overflow-hidden rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm"
+              className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
@@ -340,8 +340,8 @@ function HomePage() {
                 onClick={() => setOpenFaqIndex((prev) => (prev === index ? -1 : index))}
                 className="flex w-full items-center justify-between px-5 py-5 text-left sm:px-6"
               >
-                <h3 className="text-base font-bold text-white">{item.question}</h3>
-                <span className="ml-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-sm font-bold text-white">
+                <h3 className="text-base font-bold text-slate-900">{item.question}</h3>
+                <span className="ml-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-600">
                   {openFaqIndex === index ? "-" : "+"}
                 </span>
               </button>
@@ -355,7 +355,7 @@ function HomePage() {
                 transition={{ duration: 0.22, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
-                <p className="px-5 pb-5 text-sm leading-7 text-slate-100 sm:px-6">{item.answer}</p>
+                <p className="px-5 pb-5 text-sm leading-7 text-slate-600 sm:px-6">{item.answer}</p>
               </motion.div>
             </motion.article>
           ))}
