@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const featureCards = [
@@ -89,6 +91,14 @@ const faqItems = [
     question: "Will this work on mobile?",
     answer: "The home page and dashboard are responsive and keep the same visual language on smaller screens.",
   },
+  {
+    question: "Is my account data secure?",
+    answer: "Authentication, role-based controls, and backend validation are designed to keep account and transaction flows protected.",
+  },
+  {
+    question: "Can I track monthly activity quickly?",
+    answer: "Yes. Use transaction history and monthly summary endpoints to monitor debit, credit, and transaction volume.",
+  },
 ];
 
 const trustStats = [
@@ -98,6 +108,8 @@ const trustStats = [
 ];
 
 function HomePage() {
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
+
   return (
     <div className="space-y-16 pb-24 pt-3">
       <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-teal-950 to-teal-700 px-6 py-12 text-white shadow-2xl sm:px-10 sm:py-16 lg:px-14 lg:py-20">
@@ -135,7 +147,7 @@ function HomePage() {
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-50/75">Live summary</p>
               <div className="mt-5 rounded-[1.4rem] bg-white/90 p-5 text-slate-900 shadow-lg">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Balance snapshot</p>
-                <p className="mt-2 text-3xl font-black text-slate-950">₹1,02,900.00</p>
+                <p className="mt-2 text-3xl font-black text-slate-950">₹XX,XXX.XX</p>
                 <p className="mt-2 text-sm leading-6 text-slate-600">Fast balance visibility, cleaner actions, and less noise.</p>
               </div>
             </div>
@@ -235,6 +247,14 @@ function HomePage() {
             guide attention without making the page feel heavy.
           </p>
 
+          <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/10 p-2 backdrop-blur-sm">
+            <img
+              src="https://images.unsplash.com/photo-1460411794035-42aac080490a?auto=format&fit=crop&w=1200&q=80"
+              alt="Modern workspace setup"
+              className="h-44 w-full rounded-xl object-cover"
+            />
+          </div>
+
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/?auth=register" className="ui-btn rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900">
               Start now
@@ -258,10 +278,14 @@ function HomePage() {
 
         <div className="space-y-4">
           {customerStories.map((story, index) => (
-            <article
+            <motion.article
               key={story.name}
               className="ui-card animate-fade-up p-5"
-              style={{ animationDelay: `${index * 90}ms` }}
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.45, delay: index * 0.08 }}
+              whileHover={{ y: -4 }}
             >
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-amber-400 text-sm font-black text-slate-950">
@@ -273,7 +297,7 @@ function HomePage() {
                 </div>
               </div>
               <p className="mt-4 text-sm leading-7 text-slate-600">“{story.quote}”</p>
-            </article>
+            </motion.article>
           ))}
         </div>
       </section>
@@ -286,14 +310,37 @@ function HomePage() {
 
         <div className="space-y-4">
           {faqItems.map((item, index) => (
-            <article
+            <motion.article
               key={item.question}
-              className="ui-card animate-fade-up px-5 py-5 sm:px-6"
-              style={{ animationDelay: `${index * 80}ms` }}
+              className="ui-card overflow-hidden"
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.35, delay: index * 0.06 }}
             >
-              <h3 className="text-base font-bold text-slate-900">{item.question}</h3>
-              <p className="mt-2 text-sm leading-7 text-slate-600">{item.answer}</p>
-            </article>
+              <button
+                type="button"
+                onClick={() => setOpenFaqIndex((prev) => (prev === index ? -1 : index))}
+                className="flex w-full items-center justify-between px-5 py-5 text-left sm:px-6"
+              >
+                <h3 className="text-base font-bold text-slate-900">{item.question}</h3>
+                <span className="ml-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-600">
+                  {openFaqIndex === index ? "-" : "+"}
+                </span>
+              </button>
+
+              <motion.div
+                initial={false}
+                animate={{
+                  height: openFaqIndex === index ? "auto" : 0,
+                  opacity: openFaqIndex === index ? 1 : 0,
+                }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <p className="px-5 pb-5 text-sm leading-7 text-slate-600 sm:px-6">{item.answer}</p>
+              </motion.div>
+            </motion.article>
           ))}
         </div>
       </section>
