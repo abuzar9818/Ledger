@@ -2,65 +2,50 @@ import { Link } from "react-router-dom";
 
 const featureCards = [
   {
-    title: "Calm Dashboard",
-    description: "Portfolio summary, account status, and fast actions without clutter.",
+    title: "More clarity",
+    description: "See balances, account state, and activity without visual noise.",
   },
   {
-    title: "Fast Transfers",
-    description: "Create instant or scheduled transfers from one workflow.",
+    title: "More control",
+    description: "Transfer, schedule, and manage accounts from one focused workspace.",
   },
   {
-    title: "Readable History",
-    description: "Track activity in a clean, filterable timeline made for desktop and mobile.",
-  },
-  {
-    title: "Automation",
-    description: "Recurring transfer setup with status-aware controls.",
-  },
-  {
-    title: "Admin Controls",
-    description: "Freeze/unfreeze and approval flows with audit-ready actions.",
-  },
-  {
-    title: "Role-Aware UX",
-    description: "Users, admins, and system automation each get the right journey.",
+    title: "More choice",
+    description: "Use the product in a way that fits users, admins, and automation flows.",
   },
 ];
 
 const workflowSteps = [
   {
-    title: "Open Workspace",
-    description: "Use modal login/register without leaving the page context.",
+    title: "Open the app",
+    description: "Use modal login or register so the page stays in context.",
   },
   {
-    title: "Create Movement",
-    description: "Send immediate money or configure recurring schedules.",
+    title: "Manage money",
+    description: "Move funds, schedule transfers, and review balances with clarity.",
   },
   {
-    title: "Review Signals",
-    description: "See balances, statuses, and monthly summary in one rhythm.",
+    title: "Stay in control",
+    description: "See history, statuses, and account actions in one place.",
   },
 ];
 
-const quickStats = [
-  { label: "Live Dashboard", value: "Real-Time" },
-  { label: "Schedule Modes", value: "3" },
-  { label: "Secure Access", value: "JWT + Cookie" },
-  { label: "Mobile Ready", value: "Yes" },
-];
-
-const faqs = [
+const productHighlights = [
   {
-    question: "Can I access login/register from any page?",
-    answer: "Yes. Navbar and footer actions open authentication in a modal so you stay in context.",
+    title: "Ledger-style overview",
+    description: "A premium hero with strong contrast, clear hierarchy, and immediate action buttons.",
   },
   {
-    question: "How are transfers tracked?",
-    answer: "Every transfer appears in transaction history with status, category, and reversal handling.",
+    title: "Daily finance flow",
+    description: "Fast access to dashboard, transfer, schedule, and transaction history.",
   },
   {
-    question: "What does monthly summary show?",
-    answer: "Current-month total credits, total debits, and transaction count for your accounts.",
+    title: "Trust and proof",
+    description: "Happy customers, FAQ, and helpful product messages without long theory blocks.",
+  },
+  {
+    title: "Built for every role",
+    description: "User, admin, and system use cases are separated without feeling heavy.",
   },
 ];
 
@@ -68,159 +53,182 @@ const customerStories = [
   {
     name: "Aarav Mehta",
     role: "Business Owner",
-    quote: "The dashboard feels calm and clear. I can check balances, send transfers, and review history without getting lost.",
+    quote: "The page feels premium now. I can scan it quickly and get to the dashboard faster.",
   },
   {
     name: "Nisha Kapoor",
     role: "Operations Lead",
-    quote: "The modal login is quick, and the home page finally feels like a product instead of a document.",
+    quote: "The FAQ and customer proof give the home page a polished product feel.",
   },
   {
     name: "Rohan Shah",
     role: "Finance Manager",
-    quote: "Scheduled transfers and monthly summary are now easy to explain to the team because the layout is simple.",
+    quote: "The same color palette still feels calm, but the layout is much more interesting.",
+  },
+  {
+    name: "Priya Desai",
+    role: "Founder",
+    quote: "The new structure looks closer to a modern finance brand and less like a long document.",
   },
 ];
 
-const highlights = [
+const faqItems = [
+  {
+    question: "How do I get started?",
+    answer: "Use the login or register modal from the home page, then open the dashboard to begin working.",
+  },
+  {
+    question: "Can I manage transfers and schedules from one place?",
+    answer: "Yes. The dashboard links directly to transfer, scheduled transfer, and transaction pages.",
+  },
+  {
+    question: "Does this support admins too?",
+    answer: "Yes. Admin users get the same clean visual system with role-aware navigation and controls.",
+  },
+  {
+    question: "Will this work on mobile?",
+    answer: "The home page and dashboard are responsive and keep the same visual language on smaller screens.",
+  },
+];
+
+const trustStats = [
   { value: "12K+", label: "happy customers" },
-  { value: "99.9%", label: "workspace uptime" },
-  { value: "3 steps", label: "to start using Ledger" },
+  { value: "99.9%", label: "uptime target" },
+  { value: "3", label: "primary actions" },
 ];
 
 function HomePage() {
   return (
     <div className="space-y-10 pb-16 pt-2">
-      <section id="hero" className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-teal-950 to-teal-700 px-6 py-10 text-white shadow-2xl sm:px-10 sm:py-14">
-        <div className="absolute -left-24 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-amber-300/20 blur-3xl" />
+      <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-teal-950 to-teal-700 px-6 py-10 text-white shadow-2xl sm:px-10 sm:py-14">
+        <div className="absolute -left-24 top-0 h-64 w-64 rounded-full bg-teal-300/15 blur-3xl" />
+        <div className="absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-amber-300/20 blur-3xl" />
 
-        <div className="relative grid gap-7 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+        <div className="relative grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="animate-fade-up">
-            <p className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-50">
-              Better UX, Faster Actions
+            <p className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-50">
+              Ledger-inspired experience
             </p>
-            <h1 className="mt-4 max-w-2xl text-4xl font-black leading-tight sm:text-5xl">
-              A cleaner banking workspace built for focus
+            <h1 className="mt-5 max-w-3xl text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
+              Upgrade your banking experience with a cleaner, calmer homepage
             </h1>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-teal-50 sm:text-base">
-              Manage accounts, move money, automate recurring transfers, and review transaction signals from one consistent interface.
+            <p className="mt-5 max-w-2xl text-sm leading-relaxed text-teal-50 sm:text-base lg:text-lg">
+              The new home page uses the same current colors but follows a more polished product style: strong hero,
+              clear feature blocks, happy customer proof, FAQ, and smoother call-to-action flow.
             </p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link to="/?auth=register" className="ui-btn rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100">
-                Create Account
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/?auth=register" className="ui-btn rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100">
+                Create account
               </Link>
-              <Link to="/?auth=login" className="ui-btn rounded-lg border border-white/30 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10">
+              <Link to="/?auth=login" className="ui-btn rounded-full border border-white/25 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">
                 Login
               </Link>
-              <Link to="/dashboard" className="ui-btn rounded-lg border border-white/30 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10">
-                Open Dashboard
+              <Link to="/dashboard" className="ui-btn rounded-full border border-white/25 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">
+                Open dashboard
               </Link>
             </div>
           </div>
 
           <div className="grid gap-3 animate-fade-up-delay">
-            {quickStats.map((item) => (
-              <div key={item.label} className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
-                <p className="text-xs uppercase tracking-wide text-teal-50/80">{item.label}</p>
-                <p className="mt-1 text-lg font-bold text-white">{item.value}</p>
+            <div className="rounded-[1.6rem] border border-white/10 bg-white/10 p-5 backdrop-blur-sm shadow-[0_18px_40px_rgba(15,23,42,0.18)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-50/75">Live summary</p>
+              <div className="mt-4 rounded-[1.3rem] bg-white/90 p-4 text-slate-900 shadow-lg">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Balance snapshot</p>
+                <p className="mt-2 text-3xl font-black text-slate-950">₹1,02,900.00</p>
+                <p className="mt-2 text-sm text-slate-600">Immediate clarity for balances, status, and quick actions.</p>
               </div>
-            ))}
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+              {trustStats.map((item) => (
+                <div key={item.label} className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
+                  <p className="text-2xl font-black text-white">{item.value}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-teal-50/80">{item.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        {highlights.map((item, index) => (
+        {featureCards.map((card, index) => (
           <article
-            key={item.label}
-            className="ui-card animate-fade-up p-5"
-            style={{ animationDelay: `${index * 120}ms` }}
+            key={card.title}
+            className="ui-card animate-fade-up p-5 transition duration-200 hover:-translate-y-1 hover:shadow-lg"
+            style={{ animationDelay: `${index * 100}ms` }}
           >
-            <p className="text-3xl font-black text-slate-900">{item.value}</p>
-            <p className="mt-1 text-sm uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
+            <h2 className="text-lg font-bold text-slate-900">{card.title}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">{card.description}</p>
           </article>
         ))}
       </section>
 
-      <section id="features" className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Feature Stack</p>
-            <h2 className="mt-2 text-3xl font-black text-slate-900">Everything in one rhythm</h2>
-          </div>
-          <Link to="/dashboard/transactions" className="ui-btn ui-btn-soft px-4 py-2 text-sm">
-            See Activity
-          </Link>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {featureCards.map((card) => (
-            <article key={card.title} className="ui-card p-5 transition duration-200 hover:-translate-y-1 hover:shadow-lg">
-              <h3 className="text-lg font-bold text-slate-900">{card.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{card.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="workflow" className="ui-card p-6 sm:p-7">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Workflow</p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-900">From entry to execution</h2>
-          </div>
-          <Link to="/dashboard/scheduled-transfers" className="ui-btn ui-btn-soft px-4 py-2 text-sm">
-            Scheduled Transfers
-          </Link>
-        </div>
-
-        <div className="mt-5 grid gap-4 md:grid-cols-3">
-          {workflowSteps.map((step, index) => (
-            <div key={step.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Step {index + 1}</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{step.title}</p>
-              <p className="mt-2 text-sm text-slate-600">{step.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="ui-card p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Why People Stay</p>
-          <h2 className="mt-2 text-3xl font-black text-slate-900">Happy customers, calmer daily banking</h2>
+      <section className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="ui-card p-6 sm:p-7">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Why it works</p>
+          <h2 className="mt-2 text-3xl font-black text-slate-900">A homepage that feels like a real product</h2>
           <p className="mt-3 text-sm leading-relaxed text-slate-600">
-            Ledger keeps the experience visually controlled: same colors, lighter surfaces, stronger contrast, and less
-            text-heavy content so people can move faster with fewer mistakes.
+            The structure follows a modern finance landing page pattern: a bold hero, a few focused benefit blocks,
+            product-like sections, social proof, and a useful FAQ. It stays long, but it does not feel heavy.
           </p>
 
-          <div className="mt-5 rounded-2xl bg-gradient-to-r from-teal-50 to-amber-50 p-4">
-            <p className="text-sm font-semibold text-slate-900">What changed?</p>
-            <p className="mt-2 text-sm text-slate-600">
-              The homepage now guides users with cards, questions, testimonials, and clear calls to action instead of long theory blocks.
-            </p>
-          </div>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <p className="text-xs uppercase tracking-wide text-slate-500">UX Focus</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">Less reading, more action</p>
-            </div>
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <p className="text-xs uppercase tracking-wide text-slate-500">Visual Style</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">Same palette, cleaner hierarchy</p>
-            </div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {productHighlights.map((item) => (
+              <article key={item.title} className="rounded-2xl bg-slate-50 p-4">
+                <div className="mb-3 h-1.5 w-12 rounded-full bg-gradient-to-r from-teal-500 to-amber-400" />
+                <h3 className="text-base font-bold text-slate-900">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.description}</p>
+              </article>
+            ))}
           </div>
         </div>
 
-        <div className="grid gap-4">
+        <div className="rounded-[1.6rem] bg-gradient-to-b from-slate-900 via-teal-900 to-teal-700 p-6 text-white shadow-xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-100">Daily use</p>
+          <h3 className="mt-2 text-2xl font-black">Built for everyday finance tasks</h3>
+          <div className="mt-5 space-y-3">
+            {[
+              "Check balances without visual noise",
+              "Send money or schedule it for later",
+              "Review history in a clear timeline",
+              "Use the dashboard with less friction",
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-black text-slate-950">✓</span>
+                <p className="text-sm text-teal-50">{item}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link to="/?auth=register" className="ui-btn rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900">
+              Start now
+            </Link>
+            <Link to="/dashboard" className="ui-btn rounded-full border border-white/30 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10">
+              Go to dashboard
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Happy customers</p>
+            <h2 className="mt-2 text-3xl font-black text-slate-900">Countless happy customers</h2>
+          </div>
+          <span className="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 sm:inline-flex">
+            Social proof
+          </span>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {customerStories.map((story, index) => (
             <article
               key={story.name}
               className="ui-card animate-fade-up p-5"
-              style={{ animationDelay: `${index * 140}ms` }}
+              style={{ animationDelay: `${index * 110}ms` }}
             >
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-amber-400 text-sm font-black text-slate-950">
@@ -237,50 +245,41 @@ function HomePage() {
         </div>
       </section>
 
-      <section id="showcase" className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="ui-card p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Dashboard Experience</p>
-          <h2 className="mt-3 text-2xl font-black text-slate-900">Designed to reduce friction</h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-600">
-            Cleaner hierarchy, stronger spacing, and focused quick-actions make it easier to move through balance checks,
-            transfers, schedules, and history without context switching.
-          </p>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl bg-teal-50 p-4">
-              <p className="text-xs uppercase tracking-wide text-teal-700">Navigation</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">Section links and action links now work from navbar/footer.</p>
-            </div>
-            <div className="rounded-2xl bg-amber-50 p-4">
-              <p className="text-xs uppercase tracking-wide text-amber-700">Authentication</p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">Login and registration now open in a modal flow.</p>
-            </div>
+      <section className="ui-card p-6 sm:p-7">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">How it flows</p>
+            <h2 className="mt-2 text-2xl font-bold text-slate-900">From sign in to activity tracking</h2>
           </div>
+          <Link to="/dashboard/scheduled-transfers" className="ui-btn ui-btn-soft px-4 py-2 text-sm">
+            Scheduled transfers
+          </Link>
         </div>
 
-        <div className="ui-card bg-gradient-to-b from-slate-900 to-teal-800 p-6 text-white">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-100">Ready To Start</p>
-          <h3 className="mt-2 text-2xl font-black">Open account access in one click</h3>
-          <p className="mt-2 text-sm text-teal-50">Jump in without leaving this page and continue exactly where you started.</p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Link to="/?auth=register" className="ui-btn rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900">
-              Register
-            </Link>
-            <Link to="/?auth=login" className="ui-btn rounded-lg border border-white/40 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10">
-              Login
-            </Link>
-          </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
+          {workflowSteps.map((step, index) => (
+            <div key={step.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Step {index + 1}</p>
+              <p className="mt-2 text-base font-semibold text-slate-900">{step.title}</p>
+              <p className="mt-2 text-sm text-slate-600">{step.description}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section id="faq" className="space-y-4">
+      <section className="space-y-4" id="faq">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">FAQ</p>
-          <h2 className="mt-2 text-3xl font-black text-slate-900">Quick answers</h2>
+          <h2 className="mt-2 text-3xl font-black text-slate-900">Answers in a cleaner format</h2>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {faqs.map((item) => (
-            <article key={item.question} className="ui-card p-5">
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          {faqItems.map((item, index) => (
+            <article
+              key={item.question}
+              className="ui-card animate-fade-up p-5"
+              style={{ animationDelay: `${index * 80}ms` }}
+            >
               <h3 className="text-base font-bold text-slate-900">{item.question}</h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.answer}</p>
             </article>
@@ -288,18 +287,20 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="rounded-3xl bg-gradient-to-r from-teal-700 via-slate-900 to-amber-500 px-6 py-9 text-white shadow-xl sm:px-8">
+      <section className="rounded-[2rem] bg-gradient-to-r from-teal-700 via-slate-900 to-amber-500 px-6 py-9 text-white shadow-xl sm:px-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-xl">
-            <h2 className="text-2xl font-bold">Move from homepage to action instantly</h2>
-            <p className="mt-2 text-sm text-slate-100">Use modal auth to enter fast, then continue in the improved dashboard workflow.</p>
+          <div className="max-w-2xl">
+            <h2 className="text-2xl font-bold sm:text-3xl">Open the modal and start in one click</h2>
+            <p className="mt-2 text-sm text-slate-100 sm:text-base">
+              Keep the experience fast with login and registration in a modal while the home page stays focused on the product.
+            </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link to="/?auth=register" className="ui-btn rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100">
-              Get Started
+            <Link to="/?auth=register" className="ui-btn rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100">
+              Get started
             </Link>
-            <Link to="/?auth=login" className="ui-btn rounded-lg border border-white/40 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10">
-              Sign In
+            <Link to="/?auth=login" className="ui-btn rounded-full border border-white/35 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10">
+              Sign in
             </Link>
           </div>
         </div>
