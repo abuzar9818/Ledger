@@ -113,7 +113,7 @@ function HomePage() {
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
   return (
-    <div className="space-y-16 pb-24 pt-3">
+    <div className="space-y-10 pb-12 pt-2">
       <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-teal-950 to-teal-700 px-6 py-12 text-white shadow-2xl sm:px-10 sm:py-16 lg:px-14 lg:py-20">
         <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-teal-300/15 blur-3xl animate-float-soft" />
         <div className="absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-amber-300/20 blur-3xl animate-float-soft" />
@@ -180,7 +180,7 @@ function HomePage() {
         ))}
       </section>
 
-      <section className="ui-card p-6 sm:p-8 lg:p-10">
+      <section className="ui-card p-6 sm:p-7 lg:p-8">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Workflow</p>
           <h2 className="mt-2 text-3xl font-black text-slate-900">A horizontal flow chart for the core journey</h2>
@@ -190,7 +190,7 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="mt-10 overflow-x-auto pb-2">
+        <div className="mt-8 overflow-x-auto pb-1">
           <div className="min-w-[980px]">
             <div className="relative flex items-start gap-6">
               {workflowSteps.map((step, index) => (
@@ -218,7 +218,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10">
+      <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:gap-7">
         <div className="ui-card p-6 sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Daily use</p>
           <h3 className="mt-2 text-3xl font-black text-slate-900">Built for everyday finance tasks</h3>
@@ -268,7 +268,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 px-5 py-10 text-white shadow-2xl sm:px-8 sm:py-12 lg:px-10">
+      <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 px-5 py-8 text-white shadow-2xl sm:px-8 sm:py-10 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-teal-100/80">Happy customers</p>
           <h2 className="mt-3 text-3xl font-black text-white sm:text-4xl">What people are saying</h2>
@@ -277,7 +277,7 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="relative mt-8 overflow-hidden">
+        <div className="relative mt-6 overflow-hidden">
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-slate-950 to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-gradient-to-l from-teal-900 to-transparent" />
 
@@ -308,18 +308,18 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-7 lg:grid-cols-[0.95fr_1.05fr]" id="faq">
-        <div className="ui-card p-6 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">FAQ</p>
-          <h2 className="mt-2 text-3xl font-black text-slate-900">Common inquiries</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
+      <section className="grid gap-6 rounded-[2rem] bg-gradient-to-br from-slate-950 via-teal-950 to-teal-700 px-5 py-8 text-white shadow-2xl sm:px-8 sm:py-10 lg:grid-cols-[0.95fr_1.05fr]" id="faq">
+        <div className="rounded-2xl border border-white/15 bg-white/10 p-6 backdrop-blur-sm sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-100">FAQ</p>
+          <h2 className="mt-2 text-3xl font-black text-white">Common inquiries</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-100">
             Everything you need to know about using the Ledger app experience.
           </p>
 
-          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-2">
+          <div className="mt-6 overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-2">
             <img
-              src="https://images.unsplash.com/photo-1604594849809-dfedbc827105?auto=format&fit=crop&w=1100&q=80"
-              alt="Phone with mobile banking app"
+              src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80"
+              alt="Mobile finance app dashboard"
               className="h-52 w-full rounded-xl object-cover"
             />
           </div>
@@ -329,7 +329,7 @@ function HomePage() {
           {faqItems.map((item, index) => (
             <motion.article
               key={item.question}
-              className="ui-card overflow-hidden"
+              className="overflow-hidden rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
@@ -340,8 +340,8 @@ function HomePage() {
                 onClick={() => setOpenFaqIndex((prev) => (prev === index ? -1 : index))}
                 className="flex w-full items-center justify-between px-5 py-5 text-left sm:px-6"
               >
-                <h3 className="text-base font-bold text-slate-900">{item.question}</h3>
-                <span className="ml-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-600">
+                <h3 className="text-base font-bold text-white">{item.question}</h3>
+                <span className="ml-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-sm font-bold text-white">
                   {openFaqIndex === index ? "-" : "+"}
                 </span>
               </button>
@@ -355,14 +355,14 @@ function HomePage() {
                 transition={{ duration: 0.22, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
-                <p className="px-5 pb-5 text-sm leading-7 text-slate-600 sm:px-6">{item.answer}</p>
+                <p className="px-5 pb-5 text-sm leading-7 text-slate-100 sm:px-6">{item.answer}</p>
               </motion.div>
             </motion.article>
           ))}
         </div>
       </section>
 
-      <section className="rounded-[2rem] bg-gradient-to-r from-teal-700 via-slate-900 to-amber-500 px-6 py-9 text-white shadow-xl sm:px-8 lg:px-10">
+      <section className="rounded-[2rem] bg-gradient-to-r from-teal-700 via-slate-900 to-amber-500 px-6 py-8 text-white shadow-xl sm:px-8 lg:px-10">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl">
             <h2 className="text-2xl font-bold sm:text-3xl">Open the modal and start in one click</h2>
