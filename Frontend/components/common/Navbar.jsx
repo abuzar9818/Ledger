@@ -4,8 +4,9 @@ import { useAuth } from "../../context/AuthContext";
 
 const guestLinks = [
   { label: "Home", to: "/" },
-  { label: "Login", to: "/auth/login" },
-  { label: "Register", to: "/auth/register" },
+  { label: "Features", to: "/#features" },
+  { label: "How It Works", to: "/#workflow" },
+  { label: "FAQ", to: "/#faq" },
 ];
 
 const userLinks = [
@@ -20,9 +21,14 @@ function Navbar() {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
 
+  const openAuthModal = (mode) => {
+    navigate(`/?auth=${mode}`);
+    setMobileOpen(false);
+  };
+
   const handleLogout = async () => {
     await logout();
-    navigate("/auth/login", { replace: true });
+    navigate("/?auth=login", { replace: true });
     setMobileOpen(false);
   };
 
@@ -39,11 +45,7 @@ function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-1.5 text-sm font-medium md:flex">
-          <Link to="/" className="rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 hover:text-slate-900">
-            Home
-          </Link>
-
-          {(isAuthenticated ? userLinks : guestLinks.slice(1)).map((link) => (
+          {(isAuthenticated ? [{ label: "Home", to: "/" }, ...userLinks] : guestLinks).map((link) => (
             <Link
               key={link.to}
               to={link.to}
@@ -70,12 +72,22 @@ function Navbar() {
               </button>
             </>
           ) : (
-            <Link
-              to="/auth/register"
-              className="ui-btn ml-1 rounded-lg bg-gradient-to-r from-teal-500 to-amber-400 px-3.5 py-2 font-semibold text-slate-900 shadow-sm transition hover:from-teal-400 hover:to-amber-300"
-            >
-              Start Free
-            </Link>
+            <div className="ml-1 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => openAuthModal("login")}
+                className="ui-btn ui-btn-soft px-3 py-2"
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                onClick={() => openAuthModal("register")}
+                className="ui-btn rounded-lg bg-gradient-to-r from-teal-500 to-amber-400 px-3.5 py-2 font-semibold text-slate-900 shadow-sm transition hover:from-teal-400 hover:to-amber-300"
+              >
+                Start Free
+              </button>
+            </div>
           )}
         </div>
 
@@ -91,11 +103,11 @@ function Navbar() {
       {mobileOpen ? (
         <div className="border-t border-slate-200/90 bg-white px-4 py-3 md:hidden">
           <div className="flex flex-col gap-2 text-sm font-medium">
-            <Link to="/" onClick={closeMobileMenu} className="rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100">
-              Home
-            </Link>
             {isAuthenticated ? (
               <>
+                <Link to="/" onClick={closeMobileMenu} className="rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100">
+                  Home
+                </Link>
                 {userLinks.map((link) => (
                   <Link key={link.to} to={link.to} onClick={closeMobileMenu} className="rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100">
                     {link.label}
@@ -116,14 +128,27 @@ function Navbar() {
               </>
             ) : (
               <>
-                <Link to="/auth/login" onClick={closeMobileMenu} className="rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100">
+                {guestLinks.map((link) => (
+                  <Link key={link.to} to={link.to} onClick={closeMobileMenu} className="rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100">
+                    {link.label}
+                  </Link>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => openAuthModal("login")}
+                  className="ui-btn ui-btn-soft rounded-lg px-3 py-2 text-left"
+                >
                   Login
-                </Link>
-                <Link to="/auth/register" onClick={closeMobileMenu} className="ui-btn rounded-lg bg-gradient-to-r from-teal-500 to-amber-400 px-3 py-2 font-semibold text-slate-900 transition hover:from-teal-400 hover:to-amber-300">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openAuthModal("register")}
+                  className="ui-btn rounded-lg bg-gradient-to-r from-teal-500 to-amber-400 px-3 py-2 text-left font-semibold text-slate-900 transition hover:from-teal-400 hover:to-amber-300"
+                >
                   Register
-                </Link>
+                </button>
                 <Link to="/dashboard" onClick={closeMobileMenu} className="rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100">
-                  Dashboard
+                  Explore Dashboard
                 </Link>
               </>
             )}
