@@ -99,12 +99,12 @@ const trustStats = [
 
 function HomePage() {
   return (
-    <div className="space-y-14 pb-20 pt-2">
+    <div className="space-y-16 pb-24 pt-3">
       <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-teal-950 to-teal-700 px-6 py-12 text-white shadow-2xl sm:px-10 sm:py-16 lg:px-14 lg:py-20">
         <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-teal-300/15 blur-3xl animate-float-soft" />
         <div className="absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-amber-300/20 blur-3xl animate-float-soft" />
 
-        <div className="relative grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+        <div className="relative grid gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
           <div className="animate-fade-up max-w-3xl">
             <p className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-50">
               Ledger-inspired experience
@@ -113,8 +113,8 @@ function HomePage() {
               A calmer way to manage money, accounts, and movement
             </h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-teal-50 sm:text-base lg:text-lg">
-              The homepage now uses more open spacing, a horizontal workflow, and vertical customer and FAQ sections so it
-              feels free and premium instead of crowded.
+              The homepage keeps the same color palette while giving each section more space, cleaner flow, and a more
+              premium feel.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -152,12 +152,12 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-5 md:grid-cols-3 lg:gap-6">
+      <section className="grid gap-6 md:grid-cols-3 lg:gap-8">
         {featureCards.map((card, index) => (
           <article
             key={card.title}
             className="ui-card animate-fade-up p-6 transition duration-200 hover:-translate-y-1 hover:shadow-lg"
-            style={{ animationDelay: `${index * 110}ms` }}
+            style={{ animationDelay: `${index * 100}ms` }}
           >
             <div className="mb-4 h-1.5 w-12 rounded-full bg-gradient-to-r from-teal-500 to-amber-400" />
             <h2 className="text-lg font-bold text-slate-900">{card.title}</h2>
@@ -166,59 +166,75 @@ function HomePage() {
         ))}
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-[1.02fr_0.98fr] lg:gap-8">
-        <div className="ui-card p-6 sm:p-8">
+      <section className="ui-card p-6 sm:p-8 lg:p-10">
+        <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Workflow</p>
           <h2 className="mt-2 text-3xl font-black text-slate-900">A horizontal flow chart for the core journey</h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-            The workflow is intentionally spread out in a single line on wider screens so it reads like a flow chart,
-            with enough margin and padding to keep it open.
+          <p className="mt-3 text-sm leading-7 text-slate-600">
+            The workflow is laid out horizontally on larger screens with strong spacing between each step so it reads
+            like a clean process line instead of a crowded card group.
           </p>
+        </div>
 
-          <div className="mt-8 overflow-x-auto pb-2">
-            <div className="min-w-[760px]">
-              <div className="relative flex items-start gap-5">
-                {workflowSteps.map((step, index) => (
-                  <div key={step.title} className="relative flex-1">
-                    {index < workflowSteps.length - 1 ? (
-                      <div className="absolute left-[55%] right-[-45%] top-6 h-px bg-gradient-to-r from-teal-300 via-amber-300 to-teal-300" />
-                    ) : null}
+        <div className="mt-10 overflow-x-auto pb-2">
+          <div className="min-w-[980px]">
+            <div className="relative flex items-start gap-6">
+              {workflowSteps.map((step, index) => (
+                <div key={step.title} className="relative flex-1">
+                  {index < workflowSteps.length - 1 ? (
+                    <div className="absolute left-[58%] right-[-42%] top-6 h-px bg-gradient-to-r from-teal-300 via-amber-300 to-teal-300" />
+                  ) : null}
 
-                    <div className="relative z-10 rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm">
-                      <div className="flex items-center justify-between">
-                        <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-amber-400 text-sm font-black text-slate-950">
-                          {index + 1}
-                        </span>
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                          Step {index + 1}
-                        </span>
-                      </div>
-                      <h3 className="mt-4 text-lg font-bold text-slate-900">{step.title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-slate-600">{step.description}</p>
+                  <div className="relative z-10 rounded-[1.6rem] border border-slate-200 bg-white p-6 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-amber-400 text-sm font-black text-slate-950">
+                        {index + 1}
+                      </span>
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                        Step {index + 1}
+                      </span>
                     </div>
+                    <h3 className="mt-5 text-lg font-bold text-slate-900">{step.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{step.description}</p>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
+      </section>
 
-        <div className="rounded-[1.75rem] bg-gradient-to-b from-slate-900 via-teal-900 to-teal-700 p-6 text-white shadow-xl sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-100">Daily use</p>
-          <h3 className="mt-2 text-2xl font-black">Simple, open, and easy to scan</h3>
+      <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10">
+        <div className="ui-card p-6 sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Daily use</p>
+          <h3 className="mt-2 text-3xl font-black text-slate-900">Built for everyday finance tasks</h3>
+          <p className="mt-3 text-sm leading-7 text-slate-600">
+            This section stays light and open while still showing the essential things people do every day.
+          </p>
+
           <div className="mt-6 space-y-3">
             {[
-              "Check balances with no visual noise",
+              "Check balances without visual noise",
               "Send transfers or schedule them later",
               "Review history and statuses in one place",
               "Move through the app without extra clutter",
             ].map((item) => (
-              <div key={item} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-4 backdrop-blur-sm">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-black text-slate-950">✓</span>
-                <p className="text-sm text-teal-50">{item}</p>
+              <div key={item} className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-4">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-amber-400 text-sm font-black text-slate-950">✓</span>
+                <p className="text-sm text-slate-700">{item}</p>
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="rounded-[1.75rem] bg-gradient-to-b from-slate-900 via-teal-900 to-teal-700 p-6 text-white shadow-xl sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-100">Product focus</p>
+          <h3 className="mt-2 text-2xl font-black">Open, premium, and easy to scan</h3>
+          <p className="mt-3 max-w-xl text-sm leading-7 text-teal-50">
+            Keep the space breathable so the product feels modern, with room around each card and enough contrast to
+            guide attention without making the page feel heavy.
+          </p>
+
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/?auth=register" className="ui-btn rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900">
               Start now
@@ -230,13 +246,13 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:gap-8">
+      <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10">
         <div className="ui-card p-6 sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Happy customers</p>
           <h2 className="mt-2 text-3xl font-black text-slate-900">Social proof in a vertical stack</h2>
           <p className="mt-3 text-sm leading-7 text-slate-600">
-            Instead of packing testimonials into a dense grid, these cards stack vertically and breathe more like the
-            premium landing pages you referenced.
+            The customer stories are stacked vertically so each one has room, which keeps the section airy and closer
+            to the premium look you asked for.
           </p>
         </div>
 
@@ -287,7 +303,7 @@ function HomePage() {
           <div className="max-w-2xl">
             <h2 className="text-2xl font-bold sm:text-3xl">Open the modal and start in one click</h2>
             <p className="mt-2 text-sm text-slate-100 sm:text-base">
-              The home page stays open and spacious while login and registration remain fast and accessible in modal form.
+              Login and registration stay fast in a modal, while the page keeps its open, premium feel.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
