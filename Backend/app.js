@@ -35,8 +35,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Use routes
 
 
-app.get("/",(req,res)=>{
-    res.send("Welcome to Ledger API");
+app.get("/api/health", (req, res) => {
+    res.send("Ledger API running");
 });
 
 app.use('/api/auth',authRoutes);
