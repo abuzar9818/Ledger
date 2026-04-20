@@ -61,6 +61,11 @@ async function createTransactionController(req, res) {
             });
         }
 
+        const [fromUser, toUser] = await Promise.all([
+            userModel.findById(fromUserAccount.user).select('email name').lean(),
+            userModel.findById(toUserAccount.user).select('email name').lean()
+        ]);
+
         // Idempotency check
         const existingTransaction = await transactionModel.findOne({ idempotencykey: idempotencyKey });
 
@@ -184,20 +189,23 @@ async function createTransactionController(req, res) {
             session.endSession();
 
             try {
+                if (fromUser?.email) {
+                    await emailService.sendTransactionEmail(
+                        fromUser.email,
+                        "Transaction Successful",
+                        `Your transaction of ₹${transferAmount} was successful.`,
+                        `<p>Your transaction of <strong>₹${transferAmount}</strong> was successful.</p>`
+                    );
+                }
 
-                await emailService.sendTransactionEmail(
-                    fromUserAccount.email,
-                    "Transaction Successful",
-                    `Your transaction of ₹${transferAmount} was successful.`,
-                    `<p>Your transaction of <strong>₹${transferAmount}</strong> was successful.</p>`
-                );
-
-                await emailService.sendTransactionEmail(
-                    toUserAccount.email,
-                    "Incoming Transaction",
-                    `You received ₹${transferAmount}.`,
-                    `<p>You received <strong>₹${transferAmount}</strong>.</p>`
-                );
+                if (toUser?.email) {
+                    await emailService.sendTransactionEmail(
+                        toUser.email,
+                        "Incoming Transaction",
+                        `You received ₹${transferAmount}.`,
+                        `<p>You received <strong>₹${transferAmount}</strong>.</p>`
+                    );
+                }
 
             } catch (error) {
                 console.log("Success email failed");
@@ -212,13 +220,14 @@ async function createTransactionController(req, res) {
             }
 
             try {
-
-                await emailService.sendTransactionFailureEmail(
-                    fromUserAccount.email,
-                    "Transaction Failed",
-                    `Your transaction of ₹${transferAmount} failed.`,
-                    `<p>Your transaction of <strong>₹${transferAmount}</strong> failed.</p>`
-                );
+                if (fromUser?.email) {
+                    await emailService.sendTransactionFailureEmail(
+                        fromUser.email,
+                        "Transaction Failed",
+                        `Your transaction of ₹${transferAmount} failed.`,
+                        `<p>Your transaction of <strong>₹${transferAmount}</strong> failed.</p>`
+                    );
+                }
 
             } catch (error) {
                 console.log("Failure email failed");
