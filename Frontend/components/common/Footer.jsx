@@ -16,8 +16,11 @@ function Footer() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Navigation</p>
             <div className="mt-3 space-y-2 text-sm text-slate-600">
               <Link className="block transition hover:text-slate-900" to="/">Home</Link>
-              <Link className="block transition hover:text-slate-900" to="/auth/login">Login</Link>
-              <Link className="block transition hover:text-slate-900" to="/auth/register">Register</Link>
+              <Link className="block transition hover:text-slate-900" to="/#features">Features</Link>
+              <Link className="block transition hover:text-slate-900" to="/#workflow">How It Works</Link>
+              <Link className="block transition hover:text-slate-900" to="/#faq">FAQ</Link>
+              <Link className="block transition hover:text-slate-900" to="/?auth=login">Login</Link>
+              <Link className="block transition hover:text-slate-900" to="/?auth=register">Register</Link>
             </div>
           </div>
 
