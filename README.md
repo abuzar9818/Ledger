@@ -1,8 +1,13 @@
-# Ledger API
+# Ledger
 
-Ledger is a Node.js, Express, and MongoDB backend for banking-style account management, transfers, scheduled payments, audit logging, and admin approval workflows.
+Ledger is a full-stack banking-style project with a Node.js/Express/MongoDB backend and a React + Vite frontend.
 
 ## Overview
+
+The project includes:
+
+- Backend API for account management, transfers, scheduled payments, audit logging, and admin approval workflows
+- Frontend client for authentication, dashboard, transfers, and transaction history
 
 The API supports three actor types:
 
@@ -53,6 +58,7 @@ The backend is structured for production-style workflows: authenticated access, 
 
 ```bash
 npm install
+npm install --prefix Frontend
 ```
 
 ### Environment Variables
@@ -62,6 +68,7 @@ Create a `.env` file in the project root:
 ```env
 MONGO_URI=mongodb+srv://...
 JWT_SECRET_KEY=your_jwt_secret
+FRONTEND_URL=http://localhost:5173
 EMAIL_USER=your_email@example.com
 EMAIL_PASS=your_email_password
 MAX_REQUESTS_PER_MINUTE=20
@@ -69,17 +76,43 @@ LOGIN_RATE_LIMIT=5
 TRANSACTION_RATE_LIMIT=5
 ```
 
-### Run the Server
+Create `Frontend/.env` (optional, for custom API URL):
+
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
+```
+
+### Run the Project
 
 ```bash
-# Development
+# From project root: run backend + frontend together
 npm run dev
+```
 
-# Production
+### Run Services Separately
+
+```bash
+# Backend only
+npm run dev:backend
+
+# Frontend only
+npm run dev:frontend
+
+# Backend production
 npm start
 ```
 
-The server listens on port `3000`.
+Default local URLs:
+
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:3000`
+- Swagger UI: `http://localhost:3000/api-docs`
+
+## Frontend-Backend Connection
+
+- Frontend Axios base URL is configured in `Frontend/services/axiosInstance.js`
+- It uses `VITE_API_BASE_URL`, with fallback `http://localhost:3000/api`
+- Backend CORS origin is configured in `Backend/app.js` using `FRONTEND_URL` (fallback: `http://localhost:5173`)
 
 ### API Documentation
 
@@ -160,11 +193,11 @@ Scheduled transfer lifecycle notes:
 - Only schedules owned by the current user can be edited or cancelled.
 - Only `PENDING` schedules with `nextRunAt` in the future are eligible for edit/cancel actions.
 
-### Reports — `/reports`
+### Reports — `/api/reports`
 
 | Method | Endpoint | Auth | Description |
 | --- | --- | --- | --- |
-| GET | `/reports/monthly-summary` | USER | Get monthly debit/credit summary |
+| GET | `/api/reports/monthly-summary` | USER | Get monthly debit/credit summary |
 
 ### Admin — `/admin`
 
@@ -283,4 +316,4 @@ Backend/
 
 ISC
 
-Last Updated: 19 April 2026
+Last Updated: 21 April 2026

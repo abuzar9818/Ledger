@@ -3,12 +3,16 @@ const swaggerDocument = {
     info: {
         title: "Ledger API",
         version: "1.0.0",
-        description: "API documentation for the Ledger backend"
+        description: "API documentation for the Ledger backend used by the React frontend"
     },
     servers: [
         {
-            url: "/",
-            description: "Local development server"
+            url: "http://localhost:3000",
+            description: "Local backend server"
+        },
+        {
+            url: "http://localhost:3000/api",
+            description: "Local API base URL consumed by frontend"
         }
     ],
     tags: [
@@ -1659,7 +1663,7 @@ const swaggerDocument = {
                 }
             }
         },
-        "/reports/monthly-summary": {
+        "/api/reports/monthly-summary": {
             get: {
                 tags: ["Reports"],
                 summary: "Get monthly account summary",
@@ -1675,6 +1679,14 @@ const swaggerDocument = {
                     },
                     "401": {
                         description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: { $ref: "#/components/schemas/ErrorResponse" }
+                            }
+                        }
+                    },
+                    "500": {
+                        description: "Failed to generate monthly summary",
                         content: {
                             "application/json": {
                                 schema: { $ref: "#/components/schemas/ErrorResponse" }
