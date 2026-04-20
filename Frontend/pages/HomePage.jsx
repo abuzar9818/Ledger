@@ -64,6 +64,30 @@ const faqs = [
   },
 ];
 
+const customerStories = [
+  {
+    name: "Aarav Mehta",
+    role: "Business Owner",
+    quote: "The dashboard feels calm and clear. I can check balances, send transfers, and review history without getting lost.",
+  },
+  {
+    name: "Nisha Kapoor",
+    role: "Operations Lead",
+    quote: "The modal login is quick, and the home page finally feels like a product instead of a document.",
+  },
+  {
+    name: "Rohan Shah",
+    role: "Finance Manager",
+    quote: "Scheduled transfers and monthly summary are now easy to explain to the team because the layout is simple.",
+  },
+];
+
+const highlights = [
+  { value: "12K+", label: "happy customers" },
+  { value: "99.9%", label: "workspace uptime" },
+  { value: "3 steps", label: "to start using Ledger" },
+];
+
 function HomePage() {
   return (
     <div className="space-y-10 pb-16 pt-2">
@@ -107,6 +131,19 @@ function HomePage() {
         </div>
       </section>
 
+      <section className="grid gap-4 md:grid-cols-3">
+        {highlights.map((item, index) => (
+          <article
+            key={item.label}
+            className="ui-card animate-fade-up p-5"
+            style={{ animationDelay: `${index * 120}ms` }}
+          >
+            <p className="text-3xl font-black text-slate-900">{item.value}</p>
+            <p className="mt-1 text-sm uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
+          </article>
+        ))}
+      </section>
+
       <section id="features" className="space-y-4">
         <div className="flex items-end justify-between gap-4">
           <div>
@@ -146,6 +183,56 @@ function HomePage() {
               <p className="mt-2 text-base font-semibold text-slate-900">{step.title}</p>
               <p className="mt-2 text-sm text-slate-600">{step.description}</p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="ui-card p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Why People Stay</p>
+          <h2 className="mt-2 text-3xl font-black text-slate-900">Happy customers, calmer daily banking</h2>
+          <p className="mt-3 text-sm leading-relaxed text-slate-600">
+            Ledger keeps the experience visually controlled: same colors, lighter surfaces, stronger contrast, and less
+            text-heavy content so people can move faster with fewer mistakes.
+          </p>
+
+          <div className="mt-5 rounded-2xl bg-gradient-to-r from-teal-50 to-amber-50 p-4">
+            <p className="text-sm font-semibold text-slate-900">What changed?</p>
+            <p className="mt-2 text-sm text-slate-600">
+              The homepage now guides users with cards, questions, testimonials, and clear calls to action instead of long theory blocks.
+            </p>
+          </div>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <p className="text-xs uppercase tracking-wide text-slate-500">UX Focus</p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">Less reading, more action</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <p className="text-xs uppercase tracking-wide text-slate-500">Visual Style</p>
+              <p className="mt-1 text-sm font-semibold text-slate-900">Same palette, cleaner hierarchy</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4">
+          {customerStories.map((story, index) => (
+            <article
+              key={story.name}
+              className="ui-card animate-fade-up p-5"
+              style={{ animationDelay: `${index * 140}ms` }}
+            >
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-amber-400 text-sm font-black text-slate-950">
+                  {story.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="text-base font-bold text-slate-900">{story.name}</p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{story.role}</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-slate-600">“{story.quote}”</p>
+            </article>
           ))}
         </div>
       </section>
