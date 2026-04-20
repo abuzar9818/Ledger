@@ -107,6 +107,8 @@ const trustStats = [
   { value: "3", label: "primary actions" },
 ];
 
+const marqueeStories = [...customerStories, ...customerStories];
+
 function HomePage() {
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
@@ -249,8 +251,8 @@ function HomePage() {
 
           <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/10 p-2 backdrop-blur-sm">
             <img
-              src="https://images.unsplash.com/photo-1460411794035-42aac080490a?auto=format&fit=crop&w=1200&q=80"
-              alt="Modern workspace setup"
+              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80"
+              alt="Finance dashboard app on screen"
               className="h-44 w-full rounded-xl object-cover"
             />
           </div>
@@ -266,46 +268,61 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10">
-        <div className="ui-card p-6 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Happy customers</p>
-          <h2 className="mt-2 text-3xl font-black text-slate-900">Social proof in a vertical stack</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            The customer stories are stacked vertically so each one has room, which keeps the section airy and closer
-            to the premium look you asked for.
+      <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 px-5 py-10 text-white shadow-2xl sm:px-8 sm:py-12 lg:px-10">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-teal-100/80">Happy customers</p>
+          <h2 className="mt-3 text-3xl font-black text-white sm:text-4xl">What people are saying</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-200">
+            Real user feedback in a moving testimonial rail powered by Framer Motion.
           </p>
         </div>
 
-        <div className="space-y-4">
-          {customerStories.map((story, index) => (
-            <motion.article
-              key={story.name}
-              className="ui-card animate-fade-up p-5"
-              initial={{ opacity: 0, y: 18, scale: 0.98 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.45, delay: index * 0.08 }}
-              whileHover={{ y: -4 }}
-            >
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-amber-400 text-sm font-black text-slate-950">
-                  {story.name.charAt(0)}
+        <div className="relative mt-8 overflow-hidden">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-slate-950 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-gradient-to-l from-teal-900 to-transparent" />
+
+          <motion.div
+            className="flex gap-4"
+            animate={{ x: [0, -980] }}
+            transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
+          >
+            {marqueeStories.map((story, index) => (
+              <motion.article
+                key={`${story.name}-${index}`}
+                className="w-[320px] flex-shrink-0 rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur-sm"
+                whileHover={{ y: -4, scale: 1.01 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-amber-400 text-sm font-black text-slate-950">
+                    {story.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">{story.name}</p>
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-teal-100/75">{story.role}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-base font-bold text-slate-900">{story.name}</p>
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{story.role}</p>
-                </div>
-              </div>
-              <p className="mt-4 text-sm leading-7 text-slate-600">“{story.quote}”</p>
-            </motion.article>
-          ))}
+                <p className="mt-4 text-sm leading-7 text-slate-100">“{story.quote}”</p>
+              </motion.article>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      <section className="space-y-4" id="faq">
-        <div>
+      <section className="grid gap-7 lg:grid-cols-[0.95fr_1.05fr]" id="faq">
+        <div className="ui-card p-6 sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">FAQ</p>
-          <h2 className="mt-2 text-3xl font-black text-slate-900">Answers with room to breathe</h2>
+          <h2 className="mt-2 text-3xl font-black text-slate-900">Common inquiries</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-600">
+            Everything you need to know about using the Ledger app experience.
+          </p>
+
+          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-2">
+            <img
+              src="https://images.unsplash.com/photo-1604594849809-dfedbc827105?auto=format&fit=crop&w=1100&q=80"
+              alt="Phone with mobile banking app"
+              className="h-52 w-full rounded-xl object-cover"
+            />
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -316,7 +333,7 @@ function HomePage() {
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.35, delay: index * 0.06 }}
+              transition={{ duration: 0.35, delay: index * 0.05 }}
             >
               <button
                 type="button"
@@ -335,7 +352,7 @@ function HomePage() {
                   height: openFaqIndex === index ? "auto" : 0,
                   opacity: openFaqIndex === index ? 1 : 0,
                 }}
-                transition={{ duration: 0.25, ease: "easeInOut" }}
+                transition={{ duration: 0.22, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
                 <p className="px-5 pb-5 text-sm leading-7 text-slate-600 sm:px-6">{item.answer}</p>
