@@ -35,6 +35,8 @@ function DashboardPage() {
   const [reopenRequestsByAccount, setReopenRequestsByAccount] = useState({});
   const [requestFeedbackByAccount, setRequestFeedbackByAccount] = useState({});
   const [requestLoadingByAccount, setRequestLoadingByAccount] = useState({});
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+  const [createAccountFeedback, setCreateAccountFeedback] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -86,14 +88,18 @@ function DashboardPage() {
     }
   };
 
+  const refreshDashboardData = async () => {
+    await fetchAccountsWithBalances();
+    await fetchRequestStatuses();
+  };
+
   useEffect(() => {
     const loadDashboard = async () => {
       setIsLoading(true);
       setError("");
 
       try {
-        await fetchAccountsWithBalances();
-        await fetchRequestStatuses();
+        await refreshDashboardData();
       } catch (requestError) {
         setError(requestError.response?.data?.message || "Unable to fetch dashboard data right now.");
       } finally {
@@ -163,6 +169,27 @@ function DashboardPage() {
     }
   };
 
+  const handleCreateAccount = async () => {
+    setIsCreatingAccount(true);
+    setCreateAccountFeedback(null);
+
+    try {
+      await api.post("/accounts");
+      setCreateAccountFeedback({
+        type: "success",
+        message: "New account created successfully.",
+      });
+      await refreshDashboardData();
+    } catch (requestError) {
+      setCreateAccountFeedback({
+        type: "error",
+        message: requestError.response?.data?.message || "Unable to create account right now.",
+      });
+    } finally {
+      setIsCreatingAccount(false);
+    }
+  };
+
   const totalBalance = useMemo(
     () => accounts.reduce((sum, account) => sum + (Number(account.balance) || 0), 0),
     [accounts]
@@ -175,7 +202,19 @@ function DashboardPage() {
     >
       <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="ui-surface rounded-3xl p-5 sm:p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">Portfolio Summary</p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">Portfolio Summary</p>
+            {isUserRole ? (
+              <button
+                type="button"
+                onClick={handleCreateAccount}
+                disabled={isCreatingAccount}
+                className="ui-btn ui-btn-soft px-3 py-2 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isCreatingAccount ? "Creating..." : "Create Account"}
+              </button>
+            ) : null}
+          </div>
           <p className="mt-2 text-3xl font-black text-slate-900">
           {new Intl.NumberFormat("en-IN", {
             style: "currency",
@@ -184,6 +223,18 @@ function DashboardPage() {
           }).format(totalBalance)}
           </p>
           <p className="mt-2 text-sm text-slate-600">A quick balance snapshot across your accounts.</p>
+          {createAccountFeedback?.message ? (
+            <p
+              className={[
+                "mt-3 rounded-md px-3 py-2 text-xs",
+                createAccountFeedback.type === "success"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-rose-100 text-rose-700",
+              ].join(" ")}
+            >
+              {createAccountFeedback.message}
+            </p>
+          ) : null}
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
@@ -249,9 +300,19 @@ function DashboardPage() {
       </div>
 
       {!isLoading && accounts.length === 0 && !error ? (
-        <p className="rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
-          No accounts found. Create your first account to start tracking balances.
-        </p>
+        <div className="rounded-md border border-slate-200 bg-white px-4 py-4">
+          <p className="text-sm text-slate-600">No accounts found yet.</p>
+          {isUserRole ? (
+            <button
+              type="button"
+              onClick={handleCreateAccount}
+              disabled={isCreatingAccount}
+              className="ui-btn ui-btn-soft mt-3 px-3 py-2 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isCreatingAccount ? "Creating..." : "Create First Account"}
+            </button>
+          ) : null}
+        </div>
       ) : null}
     </DashboardLayout>
   );
