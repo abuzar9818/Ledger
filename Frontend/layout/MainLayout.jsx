@@ -63,7 +63,7 @@ function MainLayout() {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="ui-container flex-1 py-6 lg:py-8">
+      <main className="flex-1 flex flex-col">
         <Outlet />
       </main>
       <Footer />
