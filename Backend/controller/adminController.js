@@ -56,7 +56,33 @@ async function updateAccountStatus(req, res) {
     }
 }
 
+async function getAllUsers(req, res) {
+    try {
+        const users = await userModel.find().select('-password');
+        return res.status(200).json({ users });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Failed to fetch users",
+            error: error.message
+        });
+    }
+}
+
+async function getAllAccounts(req, res) {
+    try {
+        const accounts = await accountModel.find().populate("user", "name email");
+        return res.status(200).json({ accounts });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Failed to fetch accounts",
+            error: error.message
+        });
+    }
+}
+
 module.exports = {
     getPendingAccounts,
-    updateAccountStatus
+    updateAccountStatus,
+    getAllUsers,
+    getAllAccounts
 };
