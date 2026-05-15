@@ -17,12 +17,12 @@ async function userRegisterController(req,res){
     const user=await userModel.create({name,email,password});
     const token=jwt.sign({userId:user._id},process.env.JWT_SECRET_KEY,{expiresIn:'3d'});
 
-    res.cookie('token', token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: 3 * 24 * 60 * 60 * 1000
-});
+//     res.cookie('token', token, {
+//     httpOnly: true,
+//     secure: true,
+//     sameSite: "none",
+//     maxAge: 3 * 24 * 60 * 60 * 1000
+// });
     res.status(201).json({
         user:{
             _id:user._id,
@@ -88,12 +88,12 @@ async function userLoginController(req,res){
         }
     });
 
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: 3 * 24 * 60 * 60 * 1000
-});
+//   res.cookie('token', token, {
+//     httpOnly: true,
+//     secure: true,
+//     sameSite: "none",
+//     maxAge: 3 * 24 * 60 * 60 * 1000
+// });
     res.status(200).json({
         user:{
             _id:user._id,
@@ -119,11 +119,11 @@ async function userLogoutController(req,res){
         token:token,
     });
 
-        res.clearCookie('token', {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none"
-});
+//         res.clearCookie('token', {
+//     httpOnly: true,
+//     secure: true,
+//     sameSite: "none"
+// });
 
     res.status(200).json({message:"User Logged out Successfully"});
 }
