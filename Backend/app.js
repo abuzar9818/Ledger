@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
-const path = require('path');
+// const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
 const accountRoutes = require('./routes/accountRoutes');
@@ -52,12 +52,12 @@ app.use('/api/account-reopen-requests', accountReopenRequestRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/budgets', budgetRoutes);
 
-if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "Frontend/dist")));
+// if (process.env.NODE_ENV === "production") {
+//     app.use(express.static(path.join(__dirname, "Frontend/dist")));
 
-    app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "Frontend/dist/index.html"));
-    });
-}
+//     app.get("*", (req, res) => {
+//         res.sendFile(path.join(__dirname, "Frontend/dist/index.html"));
+//     });
+// }
 
 module.exports = app;
