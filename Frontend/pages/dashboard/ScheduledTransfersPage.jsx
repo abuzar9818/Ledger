@@ -1,33 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, Clock, RefreshCw, AlertCircle, CheckCircle2, ChevronRight, Edit3, Trash2 } from "lucide-react";
 import DashboardLayout from "../../components/dashboard/DashboardLayout";
 import api from "../../services/api";
 
 const recurrenceOptions = ["DAILY", "WEEKLY", "MONTHLY"];
 
 function toLocalDateTimeInputValue(dateString) {
-  if (!dateString) {
-    return "";
-  }
-
+  if (!dateString) return "";
   const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
+  if (Number.isNaN(date.getTime())) return "";
   const tzOffset = date.getTimezoneOffset() * 60000;
-  const localDate = new Date(date.getTime() - tzOffset);
-  return localDate.toISOString().slice(0, 16);
+  return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
 }
 
 function formatDate(dateString) {
   const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-
+  if (Number.isNaN(date.getTime())) return "-";
   return new Intl.DateTimeFormat("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
+    month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
   }).format(date);
 }
 
@@ -35,65 +27,62 @@ function isFuturePending(schedule) {
   return schedule.status === "PENDING" && new Date(schedule.nextRunAt).getTime() > Date.now();
 }
 
-function ScheduledTransfersPage() {
+export default function ScheduledTransfersPage() {
   const [accounts, setAccounts] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [cancelingId, setCancelingId] = useState("");
   const [editingId, setEditingId] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [formData, setFormData] = useState({
-    fromAccount: "",
-    toAccount: "",
-    amount: "",
-    recurrence: "DAILY",
-    startDate: "",
-  });
+  const [apiFeedback, setApiFeedback] = useState(null);
 
-  const accountOptions = useMemo(() => {
-    return accounts.map((account) => ({
-      id: account._id,
-      label: `${account._id} (${account.currency} - ${account.status})`,
-    }));
-  }, [accounts]);
-
-  const resetForm = () => {
-    setEditingId("");
-    setFormData((prev) => ({
-      fromAccount: accountOptions[0]?.id || prev.fromAccount,
+  const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting, isDirty } } = useForm({
+    defaultValues: {
+      fromAccount: "",
       toAccount: "",
       amount: "",
       recurrence: "DAILY",
       startDate: "",
+    }
+  });
+
+  const accountOptions = useMemo(() => {
+    return accounts.filter(a => a.status === "ACTIVE").map((account) => ({
+      id: account._id,
+      label: `...${account._id.slice(-4)} (${account.currency})`,
+      balance: account.balance
     }));
-  };
+  }, [accounts]);
 
   const fetchData = async () => {
     setIsLoading(true);
-    setError("");
-
     try {
-      const [accountsResponse, schedulesResponse] = await Promise.all([
+      const [accountsRes, schedulesRes] = await Promise.all([
         api.get("/accounts"),
         api.get("/scheduled-transactions/my-schedules"),
       ]);
 
-      const accountList = accountsResponse.data?.accounts || [];
-      const scheduleList = schedulesResponse.data?.schedules || [];
+      const accountList = accountsRes.data?.accounts || [];
+      // Fetch balances for active accounts just to show them in dropdown (optional but good UI)
+      const accountsWithBalances = await Promise.all(
+        accountList.map(async (acc) => {
+          try {
+            if (acc.status !== "ACTIVE") return acc;
+            const balRes = await api.get(`/accounts/balance/${acc._id}`);
+            return { ...acc, balance: balRes.data?.balance ?? 0 };
+          } catch {
+            return { ...acc, balance: 0 };
+          }
+        })
+      );
 
-      setAccounts(accountList);
-      setSchedules(scheduleList);
+      setAccounts(accountsWithBalances);
+      setSchedules(schedulesRes.data?.schedules || []);
 
-      if (!editingId) {
-        setFormData((prev) => ({
-          ...prev,
-          fromAccount: prev.fromAccount || accountList[0]?._id || "",
-        }));
+      if (!editingId && accountsWithBalances.length > 0 && !watch("fromAccount")) {
+        setValue("fromAccount", accountsWithBalances.find(a => a.status === "ACTIVE")?._id || "");
       }
-    } catch (requestError) {
-      setError(requestError.response?.data?.message || "Failed to load scheduled transfers.");
+    } catch (err) {
+      setApiFeedback({ type: "error", message: err.response?.data?.message || "Failed to load scheduled transfers." });
     } finally {
       setIsLoading(false);
     }
@@ -103,349 +92,293 @@ function ScheduledTransfersPage() {
     fetchData();
   }, []);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleCancelEdit = () => {
+    setEditingId("");
+    reset({
+      fromAccount: accountOptions[0]?.id || "",
+      toAccount: "",
+      amount: "",
+      recurrence: "DAILY",
+      startDate: "",
+    });
+    setApiFeedback(null);
   };
 
-  const canSubmit =
-    formData.fromAccount &&
-    formData.toAccount &&
-    Number(formData.amount) > 0 &&
-    formData.recurrence &&
-    !isSubmitting;
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError("");
-    setSuccess("");
-
-    if (!canSubmit) {
-      setError("Please fill all fields correctly.");
-      return;
-    }
-
+  const onSubmit = async (data) => {
+    setApiFeedback(null);
     const payload = {
-      fromAccount: formData.fromAccount,
-      toAccount: formData.toAccount.trim(),
-      amount: Number(formData.amount),
-      recurrence: formData.recurrence,
-      ...(formData.startDate ? { startDate: new Date(formData.startDate).toISOString() } : {}),
+      fromAccount: data.fromAccount,
+      toAccount: data.toAccount.trim(),
+      amount: Number(data.amount),
+      recurrence: data.recurrence,
+      ...(data.startDate ? { startDate: new Date(data.startDate).toISOString() } : {}),
     };
-
-    setIsSubmitting(true);
 
     try {
       if (editingId) {
         await api.put(`/scheduled-transactions/${editingId}`, payload);
-        setSuccess("Scheduled transfer updated successfully.");
+        setApiFeedback({ type: "success", message: "Schedule updated successfully." });
       } else {
         await api.post("/scheduled-transactions", payload);
-        setSuccess("Scheduled transfer created successfully.");
+        setApiFeedback({ type: "success", message: "Schedule created successfully." });
       }
-
       await fetchData();
-      resetForm();
-    } catch (requestError) {
-      setError(requestError.response?.data?.message || "Failed to submit schedule.");
-    } finally {
-      setIsSubmitting(false);
+      handleCancelEdit();
+    } catch (err) {
+      setApiFeedback({ type: "error", message: err.response?.data?.message || "Failed to save schedule." });
     }
   };
 
   const handleEdit = (schedule) => {
-    setError("");
-    setSuccess("");
+    setApiFeedback(null);
     setEditingId(schedule._id);
-    setFormData({
-      fromAccount: schedule.fromaccount,
-      toAccount: schedule.toaccount,
-      amount: String(schedule.amount),
-      recurrence: schedule.recurrence,
-      startDate: toLocalDateTimeInputValue(schedule.nextRunAt),
-    });
+    setValue("fromAccount", schedule.fromaccount);
+    setValue("toAccount", schedule.toaccount);
+    setValue("amount", schedule.amount);
+    setValue("recurrence", schedule.recurrence);
+    setValue("startDate", toLocalDateTimeInputValue(schedule.nextRunAt));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleCancel = async (scheduleId) => {
-    setError("");
-    setSuccess("");
+  const handleCancelSchedule = async (scheduleId) => {
+    if (!window.confirm("Are you sure you want to cancel this scheduled transfer?")) return;
     setCancelingId(scheduleId);
-
+    setApiFeedback(null);
     try {
       await api.patch(`/scheduled-transactions/${scheduleId}/cancel`);
-
       setSchedules((prev) =>
-        prev.map((schedule) =>
-          schedule._id === scheduleId
-            ? {
-                ...schedule,
-                status: "CANCELLED",
-              }
-            : schedule
-        )
+        prev.map((s) => s._id === scheduleId ? { ...s, status: "CANCELLED" } : s)
       );
-
-      setSuccess("Scheduled transfer cancelled successfully.");
-    } catch (requestError) {
-      setError(requestError.response?.data?.message || "Failed to cancel schedule.");
+      setApiFeedback({ type: "success", message: "Schedule cancelled." });
+    } catch (err) {
+      setApiFeedback({ type: "error", message: err.response?.data?.message || "Failed to cancel." });
     } finally {
       setCancelingId("");
     }
   };
 
   return (
-    <DashboardLayout
-      title="Scheduled Transfers"
-      subtitle="Automate recurring transfers and manage future schedules."
-    >
-      <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="ui-surface rounded-3xl p-5 sm:p-6">
-          <div className="mb-4 flex items-center justify-between gap-3">
+    <DashboardLayout title="Scheduled Transfers" subtitle="Automate recurring payments and manage future schedules.">
+      
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+        
+        {/* Form Section */}
+        <motion.section 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="ui-surface rounded-3xl p-6 h-fit"
+        >
+          <div className="mb-6 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">Scheduler</p>
-              <h2 className="mt-1 text-xl font-bold text-slate-900">
-                {editingId ? "Edit Scheduled Transfer" : "Create Scheduled Transfer"}
+              <p className="text-xs font-bold uppercase tracking-widest text-indigo-600 mb-1">Scheduler</p>
+              <h2 className="text-2xl font-black text-slate-900">
+                {editingId ? "Edit Schedule" : "New Schedule"}
               </h2>
             </div>
-
-            {editingId ? (
-              <button
-                type="button"
-                onClick={resetForm}
-                className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-              >
-                Cancel Edit
+            {editingId && (
+              <button onClick={handleCancelEdit} className="text-sm font-bold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-lg transition">
+                Cancel
               </button>
-            ) : null}
+            )}
           </div>
 
-          {error ? (
-            <p className="mb-4 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-              {error}
-            </p>
-          ) : null}
-
-          {success ? (
-            <p className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-              {success}
-            </p>
-          ) : null}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="fromAccount" className="mb-1 block text-sm font-medium text-slate-700">
-                From Account
-              </label>
-              <select
-                id="fromAccount"
-                name="fromAccount"
-                value={formData.fromAccount}
-                onChange={handleChange}
-                disabled={isLoading}
-                className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
+          <AnimatePresence>
+            {apiFeedback && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }} 
+                animate={{ opacity: 1, height: 'auto' }} 
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-6 overflow-hidden"
               >
-                <option value="">Select account</option>
-                {accountOptions.map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {account.label}
+                <div className={`flex items-start gap-3 p-4 rounded-2xl border ${apiFeedback.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'}`}>
+                  {apiFeedback.type === 'success' ? <CheckCircle2 className="shrink-0 mt-0.5" size={18}/> : <AlertCircle className="shrink-0 mt-0.5" size={18}/>}
+                  <p className="text-sm font-semibold">{apiFeedback.message}</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div>
+              <label className="mb-1.5 block text-sm font-bold text-slate-700">From Account</label>
+              <select
+                {...register("fromAccount", { required: "Source account is required" })}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm font-medium outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+              >
+                <option value="" disabled>Select account</option>
+                {accountOptions.map((acc) => (
+                  <option key={acc.id} value={acc.id}>
+                    {acc.label} {acc.balance !== undefined ? ` - Balance: ₹${acc.balance}` : ""}
                   </option>
                 ))}
               </select>
+              {errors.fromAccount && <p className="mt-1.5 text-xs font-semibold text-rose-500">{errors.fromAccount.message}</p>}
             </div>
 
             <div>
-              <label htmlFor="toAccount" className="mb-1 block text-sm font-medium text-slate-700">
-                To Account
-              </label>
+              <label className="mb-1.5 block text-sm font-bold text-slate-700">To Account ID</label>
               <input
-                id="toAccount"
-                name="toAccount"
                 type="text"
-                value={formData.toAccount}
-                onChange={handleChange}
-                placeholder="Enter receiver account id"
-                className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
+                {...register("toAccount", { 
+                  required: "Receiver account ID is required",
+                  validate: value => value !== watch("fromAccount") || "Cannot transfer to the same account"
+                })}
+                placeholder="Enter 24-character account ID"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm font-medium outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 font-mono"
               />
+              {errors.toAccount && <p className="mt-1.5 text-xs font-semibold text-rose-500">{errors.toAccount.message}</p>}
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="amount" className="mb-1 block text-sm font-medium text-slate-700">
-                  Amount
-                </label>
+                <label className="mb-1.5 block text-sm font-bold text-slate-700">Amount (INR)</label>
                 <input
-                  id="amount"
-                  name="amount"
                   type="number"
-                  min="0"
                   step="0.01"
-                  value={formData.amount}
-                  onChange={handleChange}
+                  {...register("amount", { 
+                    required: "Amount is required", 
+                    min: { value: 1, message: "Must be at least ₹1" } 
+                  })}
                   placeholder="0.00"
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm font-medium outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                />
+                {errors.amount && <p className="mt-1.5 text-xs font-semibold text-rose-500">{errors.amount.message}</p>}
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-bold text-slate-700">Recurrence</label>
+                <div className="relative">
+                  <div className="absolute left-3.5 top-3.5 text-slate-400 pointer-events-none">
+                    <RefreshCw size={18} />
+                  </div>
+                  <select
+                    {...register("recurrence", { required: true })}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 pl-11 pr-4 py-3.5 text-sm font-medium outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 appearance-none"
+                  >
+                    {recurrenceOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-bold text-slate-700">First Run (Optional)</label>
+              <div className="relative">
+                <div className="absolute left-3.5 top-3.5 text-slate-400 pointer-events-none">
+                  <Calendar size={18} />
+                </div>
+                <input
+                  type="datetime-local"
+                  {...register("startDate")}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 pl-11 pr-4 py-3.5 text-sm font-medium outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                 />
               </div>
-
-              <div>
-                <label htmlFor="recurrence" className="mb-1 block text-sm font-medium text-slate-700">
-                  Recurrence
-                </label>
-                <select
-                  id="recurrence"
-                  name="recurrence"
-                  value={formData.recurrence}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
-                >
-                  {recurrenceOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="startDate" className="mb-1 block text-sm font-medium text-slate-700">
-                First Run At (optional)
-              </label>
-              <input
-                id="startDate"
-                name="startDate"
-                type="datetime-local"
-                value={formData.startDate}
-                onChange={handleChange}
-                className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
-              />
             </div>
 
             <button
               type="submit"
-              disabled={!canSubmit}
-              className="rounded-xl bg-gradient-to-r from-slate-900 to-teal-900 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-slate-900/15 transition hover:from-slate-800 hover:to-teal-800 disabled:cursor-not-allowed disabled:opacity-70"
+              disabled={isSubmitting || (!isDirty && editingId)}
+              className="w-full mt-2 rounded-2xl bg-indigo-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition-all hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
             >
-              {isSubmitting ? "Submitting..." : editingId ? "Save Schedule" : "Submit Schedule"}
+              {isSubmitting ? <RefreshCw className="animate-spin" size={18}/> : null}
+              {isSubmitting ? "Saving..." : editingId ? "Save Changes" : "Create Schedule"}
             </button>
           </form>
-        </section>
+        </motion.section>
 
-        <section className="ui-surface rounded-3xl p-5 sm:p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Overview</p>
-          <h3 className="mt-1 text-xl font-bold text-slate-900">Your scheduled transfers</h3>
-          <p className="mt-2 text-sm text-slate-600">
-            Edit or cancel future schedules before the next run. Active schedules execute automatically based on recurrence.
-          </p>
+        {/* Timeline Section */}
+        <motion.section 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex flex-col gap-4"
+        >
+          <div className="ui-surface rounded-3xl p-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-6">Upcoming Timeline</h3>
+            
+            {isLoading ? (
+              <div className="space-y-4">
+                {[1,2,3].map(i => (
+                  <div key={i} className="h-24 w-full bg-slate-100 animate-pulse rounded-2xl"></div>
+                ))}
+              </div>
+            ) : schedules.length === 0 ? (
+              <div className="text-center py-10 px-4 border border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+                <Calendar className="mx-auto h-12 w-12 text-slate-300 mb-3" />
+                <h4 className="text-lg font-bold text-slate-700">No Schedules Active</h4>
+                <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">Create your first scheduled transfer to automate your payments seamlessly.</p>
+              </div>
+            ) : (
+              <div className="relative border-l-2 border-indigo-100 ml-4 space-y-6 pb-4">
+                <AnimatePresence mode="popLayout">
+                  {schedules.map((schedule, idx) => {
+                    const isPending = isFuturePending(schedule);
+                    const isCancelled = schedule.status === "CANCELLED";
+                    
+                    return (
+                      <motion.div 
+                        key={schedule._id}
+                        layout
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="relative pl-6"
+                      >
+                        {/* Timeline Dot */}
+                        <div className={`absolute -left-[9px] top-4 h-4 w-4 rounded-full border-4 border-white ${isCancelled ? 'bg-slate-300' : 'bg-indigo-500 shadow-sm shadow-indigo-500/40'}`}></div>
+                        
+                        <div className={`p-5 rounded-2xl border transition-all ${isCancelled ? 'border-slate-100 bg-slate-50 opacity-60 grayscale-[0.5]' : 'border-indigo-100 bg-white shadow-sm hover:shadow-md'}`}>
+                          <div className="flex flex-wrap items-start justify-between gap-4">
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md ${
+                                  isCancelled ? 'bg-slate-200 text-slate-600' : 
+                                  isPending ? 'bg-indigo-100 text-indigo-700' : 
+                                  'bg-emerald-100 text-emerald-700'
+                                }`}>
+                                  {schedule.status}
+                                </span>
+                                <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                  <RefreshCw size={10}/> {schedule.recurrence}
+                                </span>
+                              </div>
+                              <h4 className="text-lg font-bold text-slate-900 mt-2">
+                                ₹{schedule.amount}
+                              </h4>
+                              <p className="text-sm font-medium text-slate-500 flex items-center gap-1 mt-1">
+                                To: <span className="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">{schedule.toaccount.slice(-6)}</span>
+                              </p>
+                            </div>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl bg-teal-50 p-3">
-              <p className="text-xs uppercase tracking-wide text-teal-700">Total</p>
-              <p className="mt-1 text-xl font-bold text-slate-900">{schedules.length}</p>
-            </div>
-            <div className="rounded-2xl bg-amber-50 p-3">
-              <p className="text-xs uppercase tracking-wide text-amber-700">Pending</p>
-              <p className="mt-1 text-xl font-bold text-slate-900">
-                {schedules.filter((schedule) => schedule.status === "PENDING").length}
-              </p>
-            </div>
-            <div className="rounded-2xl bg-slate-100 p-3">
-              <p className="text-xs uppercase tracking-wide text-slate-600">Cancelled</p>
-              <p className="mt-1 text-xl font-bold text-slate-900">
-                {schedules.filter((schedule) => schedule.status === "CANCELLED").length}
-              </p>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <section className="ui-surface overflow-hidden rounded-3xl">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
-              <tr>
-                <th className="px-4 py-3">From</th>
-                <th className="px-4 py-3">To</th>
-                <th className="px-4 py-3">Amount</th>
-                <th className="px-4 py-3">Recurrence</th>
-                <th className="px-4 py-3">Next Run</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 bg-white">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-6 text-center text-slate-500">
-                    Loading schedules...
-                  </td>
-                </tr>
-              ) : schedules.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-6 text-center text-slate-500">
-                    No scheduled transfers found.
-                  </td>
-                </tr>
-              ) : (
-                schedules.map((schedule) => {
-                  const canManage = isFuturePending(schedule);
-
-                  return (
-                    <tr key={schedule._id} className="text-slate-700">
-                      <td className="px-4 py-3 font-medium">{schedule.fromaccount}</td>
-                      <td className="px-4 py-3">{schedule.toaccount}</td>
-                      <td className="px-4 py-3">
-                        {new Intl.NumberFormat("en-IN", {
-                          style: "currency",
-                          currency: "INR",
-                          maximumFractionDigits: 2,
-                        }).format(schedule.amount || 0)}
-                      </td>
-                      <td className="px-4 py-3">{schedule.recurrence}</td>
-                      <td className="px-4 py-3">{formatDate(schedule.nextRunAt)}</td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={[
-                            "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
-                            schedule.status === "PENDING"
-                              ? "bg-amber-100 text-amber-800"
-                              : schedule.status === "CANCELLED"
-                              ? "bg-rose-100 text-rose-800"
-                              : "bg-slate-100 text-slate-700",
-                          ].join(" ")}
-                        >
-                          {schedule.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="inline-flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleEdit(schedule)}
-                            disabled={!canManage}
-                            className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleCancel(schedule._id)}
-                            disabled={!canManage || cancelingId === schedule._id}
-                            className="rounded-lg border border-rose-300 px-2.5 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            {cancelingId === schedule._id ? "Cancelling..." : "Cancel"}
-                          </button>
+                            <div className="text-right">
+                              <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Next Run</p>
+                              <p className="text-sm font-semibold text-slate-700 flex items-center justify-end gap-1.5">
+                                <Clock size={14} className={isCancelled ? 'text-slate-400' : 'text-indigo-500'}/>
+                                {formatDate(schedule.nextRunAt)}
+                              </p>
+                              
+                              {isPending && (
+                                <div className="flex items-center justify-end gap-2 mt-4">
+                                  <button onClick={() => handleEdit(schedule)} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Edit">
+                                    <Edit3 size={16}/>
+                                  </button>
+                                  <button onClick={() => handleCancelSchedule(schedule._id)} disabled={cancelingId === schedule._id} className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Cancel">
+                                    <Trash2 size={16}/>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+                      </motion.div>
+                    )
+                  })}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
+        </motion.section>
+      </div>
     </DashboardLayout>
   );
 }
-
-export default ScheduledTransfersPage;
