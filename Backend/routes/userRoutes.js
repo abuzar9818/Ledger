@@ -4,15 +4,26 @@ const userController = require('../controller/userController');
 
 const userRoutes = Router();
 
-userRoutes.use(authMiddleware.authMiddleware);
-
 // PUT /api/users/profile
-userRoutes.put('/profile', userController.updateProfile);
+userRoutes.put('/profile', authMiddleware.authMiddleware, userController.updateProfile);
 
 // GET /api/users/sessions
-userRoutes.get('/sessions', userController.getSessions);
+userRoutes.get(
+    '/sessions',
+    authMiddleware.authMiddleware,
+    userController.getSessions
+);
 
-// DELETE /api/users/sessions/:sessionId
-userRoutes.delete('/sessions/:sessionId', userController.revokeSession);
+userRoutes.delete(
+    '/sessions/:id',
+    authMiddleware.authMiddleware,
+    userController.revokeSession
+);
+
+userRoutes.get(
+    '/notifications',
+    authMiddleware.authMiddleware,
+    userController.getNotifications
+);
 
 module.exports = userRoutes;
