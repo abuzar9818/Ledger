@@ -35,8 +35,8 @@ export default function AdminPage() {
       setUsers(usersRes.data?.users || []);
       setAccounts(accountsRes.data?.accounts || []);
       setPendingAccounts(pendingRes.data?.pendingAccounts || []);
-      setClosureRequests(closureRes.data?.requests || []);
-      setReopenRequests(reopenRes.data?.requests || []);
+      setClosureRequests(closureRes.data?.closureRequests || []);
+      setReopenRequests(reopenRes.data?.reopenRequests || []);
       setAuditLogs(logsRes.data?.logs || []);
 
     } catch (err) {

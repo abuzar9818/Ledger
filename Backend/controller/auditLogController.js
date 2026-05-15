@@ -70,6 +70,7 @@ async function getAuditLogs(req, res) {
 
         const logs = await auditLogModel
             .find(queryFilter)
+            .populate('userId', 'name email role')
             .sort({ timestamp: -1 })
             .skip(skip)
             .limit(limitNumber)
