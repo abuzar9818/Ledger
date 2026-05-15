@@ -159,3 +159,9 @@ h6 {
 .animate-float-soft {
   animation: floatSoft 5s ease-in-out infinite;
 }
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
