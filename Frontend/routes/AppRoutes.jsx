@@ -3,6 +3,7 @@ import MainLayout from "../layout/MainLayout";
 import AuthLayout from "../layout/AuthLayout";
 import HomePage from "../pages/HomePage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
+import AccountsPage from "../pages/dashboard/AccountsPage";
 import TransferPage from "../pages/dashboard/TransferPage";
 import TransactionHistoryPage from "../pages/dashboard/TransactionHistoryPage";
 import ScheduledTransfersPage from "../pages/dashboard/ScheduledTransfersPage";
@@ -23,6 +24,7 @@ function AppRoutes() {
 
       <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard/accounts" element={<AccountsPage />} />
         <Route path="/dashboard/transfer" element={<TransferPage />} />
         <Route path="/dashboard/transactions" element={<TransactionHistoryPage />} />
         <Route path="/dashboard/scheduled-transfers" element={<ScheduledTransfersPage />} />
@@ -31,9 +33,7 @@ function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
-        <Route element={<MainLayout />}>
-          <Route path="/admin" element={<AdminPage />} />
-        </Route>
+        <Route path="/admin" element={<AdminPage />} />
       </Route>
 
       <Route element={<PublicOnlyRoute />}>
