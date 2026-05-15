@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { ArrowUpRight, ArrowRightLeft, CalendarClock, History, Plus, Wallet, TrendingUp, PiggyBank, CreditCard, Activity } from "lucide-react";
 
 import AccountCard from "../../components/dashboard/AccountCard";
-import AccountCardSkeleton from "../../components/dashboard/AccountCardSkeleton";
 import DashboardLayout from "../../components/dashboard/DashboardLayout";
+import { SkeletonLoader, EmptyState } from "../../components/common/UIStates";
 import { IncomeExpenseChart, SpendingPieChart, SavingsLineChart } from "../../components/dashboard/charts/OverviewCharts";
 import RecentTransactionsTable from "../../components/dashboard/RecentTransactionsTable";
 import { useAuth } from "../../context/AuthContext";
@@ -399,7 +399,17 @@ export default function DashboardPage() {
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {isLoading
-              ? Array.from({ length: 3 }).map((_, i) => <AccountCardSkeleton key={i} />)
+              ? Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="ui-surface rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between h-[280px]">
+                     <div>
+                       <SkeletonLoader type="circle" className="h-10 w-10 mb-4" />
+                       <SkeletonLoader type="text" rows={1} className="w-1/2 mb-2" />
+                       <SkeletonLoader type="text" rows={1} className="w-3/4 mb-6 h-8" />
+                       <SkeletonLoader type="text" rows={3} />
+                     </div>
+                     <SkeletonLoader type="text" rows={1} className="w-full h-10 mt-4 rounded-xl" />
+                  </div>
+                ))
               : accounts.map((acc) => (
                   <AccountCard
                     key={acc._id}
@@ -417,21 +427,23 @@ export default function DashboardPage() {
           </div>
 
           {!isLoading && accounts.length === 0 && !error && (
-            <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50/50 py-12 text-center">
-              <Wallet className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900">No Accounts Found</h3>
-              <p className="mt-1 text-sm text-slate-500 mb-6">You don't have any accounts yet. Create one to get started.</p>
-              {isUserRole && (
-                <button
-                  type="button"
-                  onClick={handleCreateAccount}
-                  disabled={isCreatingAccount}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-teal-700 disabled:opacity-50"
-                >
-                  <Plus size={18} /> {isCreatingAccount ? "Creating..." : "Open First Account"}
-                </button>
-              )}
-            </div>
+            <EmptyState 
+              icon={Wallet}
+              title="No Accounts Found"
+              description="You don't have any accounts yet. Create one to get started."
+              action={
+                isUserRole && (
+                  <button
+                    type="button"
+                    onClick={handleCreateAccount}
+                    disabled={isCreatingAccount}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-teal-700 disabled:opacity-50 mt-2"
+                  >
+                    <Plus size={18} /> {isCreatingAccount ? "Creating..." : "Open First Account"}
+                  </button>
+                )
+              }
+            />
           )}
         </motion.div>
       </motion.div>
