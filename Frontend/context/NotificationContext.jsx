@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import api from "../services/api";
+import { useAuth } from "./AuthContext";
 
 const NotificationContext = createContext();
 
@@ -6,72 +8,88 @@ export function useNotifications() {
   return useContext(NotificationContext);
 }
 
-const mockNotifications = [
-  {
-    id: "notif_1",
-    type: "TRANSACTION",
-    title: "Incoming Transfer",
-    message: "You received ₹4,200.00 from John Doe.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 mins ago
-    read: false,
-  },
-  {
-    id: "notif_2",
-    type: "SECURITY",
-    title: "New Login Detected",
-    message: "A new login was detected from Chrome on Mac OS.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-    read: false,
-  },
-  {
-    id: "notif_3",
-    type: "SYSTEM",
-    title: "Scheduled Transfer Successful",
-    message: "Your scheduled transfer of ₹1,500.00 to account ...89ab completed.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-    read: true,
-  },
-  {
-    id: "notif_4",
-    type: "ACCOUNT",
-    title: "Account Approved",
-    message: "Your new savings account has been approved and is now ACTIVE.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
-    read: true,
-  }
-];
-
 export function NotificationProvider({ children }) {
-  const [notifications, setNotifications] = useState(() => {
-    const saved = localStorage.getItem("ledger_notifications");
-    return saved ? JSON.parse(saved) : mockNotifications;
+  const { isAuthenticated } = useAuth();
+  const [notifications, setNotifications] = useState([]);
+  const [readIds, setReadIds] = useState(() => {
+    const saved = localStorage.getItem("ledger_read_notifications");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [deletedIds, setDeletedIds] = useState(() => {
+    const saved = localStorage.getItem("ledger_deleted_notifications");
+    return saved ? JSON.parse(saved) : [];
   });
 
-  useEffect(() => {
-    localStorage.setItem("ledger_notifications", JSON.stringify(notifications));
-  }, [notifications]);
+  const fetchNotifications = async () => {
+    if (!isAuthenticated) {
+      setNotifications([]);
+      return;
+    }
+    try {
+      const response = await api.get('/users/notifications');
+      if (response.data?.notifications) {
+        setNotifications(response.data.notifications);
+      }
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+    }
+  };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  useEffect(() => {
+    fetchNotifications();
+    // Poll every 2 minutes
+    const interval = setInterval(fetchNotifications, 120000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    localStorage.setItem("ledger_read_notifications", JSON.stringify(readIds));
+  }, [readIds]);
+
+  useEffect(() => {
+    localStorage.setItem("ledger_deleted_notifications", JSON.stringify(deletedIds));
+  }, [deletedIds]);
+
+  // Merge backend notifications with local read/deleted state
+  const activeNotifications = notifications
+    .filter(n => !deletedIds.includes(n.id))
+    .map(n => ({
+      ...n,
+      read: readIds.includes(n.id)
+    }));
+
+  const unreadCount = activeNotifications.filter(n => !n.read).length;
 
   const markAsRead = (id) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    setReadIds(prev => {
+      if (!prev.includes(id)) return [...prev, id];
+      return prev;
+    });
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    const newReadIds = [...readIds];
+    activeNotifications.forEach(n => {
+      if (!newReadIds.includes(n.id)) newReadIds.push(n.id);
+    });
+    setReadIds(newReadIds);
   };
 
   const deleteNotification = (id) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+    setDeletedIds(prev => {
+      if (!prev.includes(id)) return [...prev, id];
+      return prev;
+    });
   };
 
   return (
     <NotificationContext.Provider value={{
-      notifications,
+      notifications: activeNotifications,
       unreadCount,
       markAsRead,
       markAllAsRead,
-      deleteNotification
+      deleteNotification,
+      refreshNotifications: fetchNotifications
     }}>
       {children}
     </NotificationContext.Provider>
