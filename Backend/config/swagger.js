@@ -2,8 +2,15 @@ const swaggerDocument = {
     openapi: "3.0.0",
     info: {
         title: "Ledger API",
-        version: "1.0.0",
-        description: "API documentation for the Ledger backend used by the React frontend"
+        version: "1.1.0",
+        description: "API documentation for the Ledger backend used by the React frontend.\n\nLast updated: 16 May 2026.",
+        contact: {
+            name: "Ledger Dev Team",
+            email: "devops@example.com"
+        },
+        license: {
+            name: "ISC"
+        }
     },
     servers: [
         {
@@ -13,6 +20,10 @@ const swaggerDocument = {
         {
             url: "http://localhost:3000/api",
             description: "Local API base URL consumed by frontend"
+        },
+        {
+            url: "https://api.ledger.example.com",
+            description: "Production API (placeholder)"
         }
     ],
     tags: [
@@ -295,6 +306,11 @@ const swaggerDocument = {
                 }
             }
         }
+    },
+    security: [{ bearerAuth: [] }],
+    externalDocs: {
+        description: "Project README and docs",
+        url: "https://github.com/your-org/ledger#readme"
     },
     paths: {
         "/": {
