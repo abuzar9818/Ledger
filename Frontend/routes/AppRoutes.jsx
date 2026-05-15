@@ -1,13 +1,16 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
+import AuthLayout from "../layout/AuthLayout";
 import HomePage from "../pages/HomePage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 import TransferPage from "../pages/dashboard/TransferPage";
 import TransactionHistoryPage from "../pages/dashboard/TransactionHistoryPage";
 import ScheduledTransfersPage from "../pages/dashboard/ScheduledTransfersPage";
 import AdminPage from "../pages/admin/AdminPage";
+import LoginPage from "../pages/auth/LoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
 import NotFoundPage from "../pages/NotFoundPage";
-import ProtectedRoute from "./ProtectedRoute";
+import ProtectedRoute, { PublicOnlyRoute } from "./ProtectedRoute";
 
 function AppRoutes() {
   return (
@@ -29,8 +32,12 @@ function AppRoutes() {
         </Route>
       </Route>
 
-      <Route path="/auth/login" element={<Navigate to="/?auth=login" replace />} />
-      <Route path="/auth/register" element={<Navigate to="/?auth=register" replace />} />
+      <Route element={<PublicOnlyRoute />}>
+        <Route element={<AuthLayout />}>
+          <Route path="/auth/login" element={<LoginPage />} />
+          <Route path="/auth/register" element={<RegisterPage />} />
+        </Route>
+      </Route>
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
