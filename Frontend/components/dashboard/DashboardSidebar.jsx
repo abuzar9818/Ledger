@@ -5,6 +5,7 @@ const primaryLinks = [
   { label: "Transfer", to: "/dashboard/transfer" },
   { label: "Scheduled", to: "/dashboard/scheduled-transfers" },
   { label: "Transactions", to: "/dashboard/transactions" },
+  { label: "Reports", to: "/dashboard/reports" },
   { label: "Admin", to: "/admin" },
 ];
 
