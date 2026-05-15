@@ -26,6 +26,14 @@ function buildLatestRequestMap(requests = []) {
   }, {});
 }
 
+function formatCurrency(amount, currency = "INR") {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 2,
+  }).format(amount || 0);
+}
+
 function DashboardPage() {
   const { user } = useAuth();
   const isUserRole = user?.role === "USER";
@@ -216,11 +224,7 @@ function DashboardPage() {
             ) : null}
           </div>
           <p className="mt-2 text-3xl font-black text-slate-900">
-          {new Intl.NumberFormat("en-IN", {
-            style: "currency",
-            currency: "INR",
-            maximumFractionDigits: 2,
-          }).format(totalBalance)}
+            {formatCurrency(totalBalance)}
           </p>
           <p className="mt-2 text-sm text-slate-600">A quick balance snapshot across your accounts.</p>
           {createAccountFeedback?.message ? (
@@ -239,9 +243,9 @@ function DashboardPage() {
 
         <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
           {[
-            { label: "Accounts", value: accounts.length, tone: "teal" },
-            { label: "Active", value: accounts.filter((account) => account.status === "ACTIVE").length, tone: "amber" },
-            { label: "Workspace", value: "Ready", tone: "slate" },
+            { label: "Accounts", value: accounts.length },
+            { label: "Active", value: accounts.filter((account) => account.status === "ACTIVE").length },
+            { label: "Workspace", value: "Ready" },
           ].map((item) => (
             <div key={item.label} className="ui-surface rounded-2xl p-4">
               <p className="text-xs uppercase tracking-wide text-slate-500">{item.label}</p>
