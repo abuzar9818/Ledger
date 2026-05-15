@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "../../components/dashboard/DashboardLayout";
 import api from "../../services/api";
-import { CreditCard, Wallet, Lock, Activity, Check, X, RefreshCw } from "lucide-react";
+import { CreditCard, Wallet, Lock, Activity, Check, X, RefreshCw, Plus } from "lucide-react";
+import { SkeletonLoader, EmptyState } from "../../components/common/UIStates";
 
 export default function AccountsPage() {
   const [accounts, setAccounts] = useState([]);
@@ -83,18 +84,30 @@ export default function AccountsPage() {
   return (
     <DashboardLayout title="My Accounts" subtitle="Manage your financial accounts and balances.">
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-          <RefreshCw className="animate-spin mb-4" size={32} />
-          <p className="font-medium text-sm">Loading accounts...</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="ui-surface rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between h-[280px]">
+               <div>
+                 <SkeletonLoader type="circle" className="h-10 w-10 mb-4" />
+                 <SkeletonLoader type="text" rows={1} className="w-1/2 mb-2" />
+                 <SkeletonLoader type="text" rows={1} className="w-3/4 mb-6 h-8" />
+                 <SkeletonLoader type="text" rows={3} />
+               </div>
+               <SkeletonLoader type="text" rows={1} className="w-full h-10 mt-4 rounded-xl" />
+            </div>
+          ))}
         </div>
       ) : accounts.length === 0 ? (
-        <div className="ui-surface flex flex-col items-center justify-center py-16 px-4 text-center">
-          <div className="h-16 w-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 mb-4 border border-slate-100 shadow-sm">
-            <Wallet size={32} />
-          </div>
-          <h3 className="text-lg font-bold text-slate-900">No Accounts Found</h3>
-          <p className="text-sm text-slate-500 mt-1 max-w-sm">You don't have any active accounts yet. Your accounts will appear here once approved by an admin.</p>
-        </div>
+        <EmptyState 
+          icon={Wallet}
+          title="No Accounts Found"
+          description="You don't have any active accounts yet. Your accounts will appear here once approved by an admin."
+          action={
+             <button className="ui-btn ui-btn-primary px-6 py-2.5 flex items-center gap-2 mx-auto">
+               <Plus size={16} /> Open Account
+             </button>
+          }
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {accounts.map(acc => (
