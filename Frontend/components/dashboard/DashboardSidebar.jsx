@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 
 const primaryLinks = [
   { label: "Dashboard", to: "/dashboard" },
+  { label: "Accounts", to: "/dashboard/accounts" },
   { label: "Transfer", to: "/dashboard/transfer" },
   { label: "Scheduled", to: "/dashboard/scheduled-transfers" },
   { label: "Transactions", to: "/dashboard/transactions" },
