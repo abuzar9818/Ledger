@@ -26,4 +26,18 @@ adminRoutes.patch(
     adminController.updateAccountStatus
 );
 
+adminRoutes.get(
+    '/users',
+    authMiddleware.authMiddleware,
+    authMiddleware.adminMiddleware,
+    adminController.getAllUsers
+);
+
+adminRoutes.get(
+    '/accounts',
+    authMiddleware.authMiddleware,
+    authMiddleware.adminMiddleware,
+    adminController.getAllAccounts
+);
+
 module.exports = adminRoutes;
