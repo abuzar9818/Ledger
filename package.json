@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-  "dev:backend": "nodemon server.js",
-  "dev:frontend": "npm run dev --prefix Frontend",
-  "start": "node server.js"
-},
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "nodemon server.js",
+    "dev:frontend": "npm run dev --prefix Frontend",
+    "start": "node server.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -26,6 +26,7 @@
     "morgan": "^1.10.1",
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.1",
+    "recharts": "^3.8.1",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
