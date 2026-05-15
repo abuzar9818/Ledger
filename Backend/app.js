@@ -1,6 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 // const path = require('path');
@@ -24,7 +24,7 @@ const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
 
 app.use(cors({
     origin: allowedOrigin,
-    credentials: true,
+    // credentials: true,
 }));
 
 app.use(express.json());
@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
-app.use(cookieParser());
+// app.use(cookieParser());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
