@@ -3,8 +3,11 @@ import DashboardLayout from "../../components/dashboard/DashboardLayout";
 import api from "../../services/api";
 import { CreditCard, Wallet, Lock, Activity, Check, X, RefreshCw, Plus } from "lucide-react";
 import { SkeletonLoader, EmptyState } from "../../components/common/UIStates";
+import VirtualCard from "../../components/dashboard/VirtualCard";
+import { useAuth } from "../../context/AuthContext";
 
 export default function AccountsPage() {
+  const { user } = useAuth();
   const [accounts, setAccounts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
@@ -83,7 +86,24 @@ export default function AccountsPage() {
 
   return (
     <DashboardLayout title="My Accounts" subtitle="Manage your financial accounts and balances.">
-      {isLoading ? (
+      
+      <div className="grid lg:grid-cols-[380px_1fr] gap-8 mb-8">
+        {/* Virtual Card Section */}
+        <div>
+          <h2 className="text-lg font-bold text-slate-900 mb-4 tracking-tight">Virtual Debit Card</h2>
+          <VirtualCard userName={user?.name || "Valued Member"} />
+        </div>
+
+        {/* Existing Accounts Section */}
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-bold text-slate-900 tracking-tight">Active Ledgers</h2>
+            <button className="text-xs font-bold text-teal-600 bg-teal-50 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition flex items-center gap-1">
+              <Plus size={14} /> New Account
+            </button>
+          </div>
+          
+          {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="ui-surface rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between h-[280px]">
@@ -174,6 +194,8 @@ export default function AccountsPage() {
           ))}
         </div>
       )}
+        </div>
+      </div>
     </DashboardLayout>
   );
 }
