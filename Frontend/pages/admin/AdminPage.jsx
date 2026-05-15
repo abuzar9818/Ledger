@@ -92,7 +92,7 @@ export default function AdminPage() {
       ) : (
         <>
           {activeTab === "overview" && <OverviewTab stats={stats} />}
-          {activeTab === "accounts" && <AccountsUsersTab accounts={accounts} refreshData={fetchData} />}
+          {activeTab === "accounts" && <AccountsUsersTab accounts={accounts} users={users} refreshData={fetchData} />}
           {activeTab === "requests" && (
             <RequestsTab 
               pendingAccounts={pendingAccounts} 

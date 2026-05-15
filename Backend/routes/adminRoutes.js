@@ -40,4 +40,18 @@ adminRoutes.get(
     adminController.getAllAccounts
 );
 
+adminRoutes.put(
+    '/users/:id/role',
+    authMiddleware.authMiddleware,
+    authMiddleware.adminMiddleware,
+    adminController.updateUserRole
+);
+
+adminRoutes.delete(
+    '/users/:id',
+    authMiddleware.authMiddleware,
+    authMiddleware.adminMiddleware,
+    adminController.deleteUser
+);
+
 module.exports = adminRoutes;

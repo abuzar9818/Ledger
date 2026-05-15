@@ -80,9 +80,59 @@ async function getAllAccounts(req, res) {
     }
 }
 
+async function updateUserRole(req, res) {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+
+        if (!["USER", "ADMIN"].includes(role)) {
+            return res.status(400).json({ message: "Invalid role" });
+        }
+
+        const user = await userModel.findById(id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+        if (user.systemUser) return res.status(403).json({ message: "Cannot modify system user" });
+
+        user.role = role;
+        await user.save();
+
+        return res.status(200).json({ message: `User promoted to ${role}`, user });
+    } catch (error) {
+        return res.status(500).json({ message: "Failed to update user role", error: error.message });
+    }
+}
+
+async function deleteUser(req, res) {
+    try {
+        const { id } = req.params;
+
+        const user = await userModel.findById(id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+        if (user.systemUser) return res.status(403).json({ message: "Cannot delete system user" });
+
+        // Check if user has active accounts
+        const userAccounts = await accountModel.find({ user: id });
+        const hasActiveAccounts = userAccounts.some(acc => acc.status === "ACTIVE" || acc.status === "FROZEN");
+
+        if (hasActiveAccounts) {
+            return res.status(400).json({ 
+                message: "Cannot delete user with active or frozen accounts. Close the accounts first." 
+            });
+        }
+
+        await userModel.findByIdAndDelete(id);
+
+        return res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+        return res.status(500).json({ message: "Failed to delete user", error: error.message });
+    }
+}
+
 module.exports = {
     getPendingAccounts,
     updateAccountStatus,
     getAllUsers,
-    getAllAccounts
+    getAllAccounts,
+    updateUserRole,
+    deleteUser
 };

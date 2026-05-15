@@ -35,7 +35,18 @@ const userSchema=new mongoose.Schema({
         default:false,
         immutable:true,
         select:false
-    }
+    },
+    theme: {
+        type: String,
+        enum: ["light", "dark", "system"],
+        default: "system"
+    },
+    activeSessions: [{
+        device: String,
+        ip: String,
+        loginTime: { type: Date, default: Date.now },
+        token: String
+    }]
 },{timestamps:true});
 
 userSchema.pre('save',async function(){

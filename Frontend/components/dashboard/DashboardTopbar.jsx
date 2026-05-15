@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import NotificationDropdown from "./NotificationDropdown";
 
 function DashboardTopbar({ title = "Dashboard", subtitle = "Track your accounts and balances in real time." }) {
   const navigate = useNavigate();
@@ -20,8 +21,11 @@ function DashboardTopbar({ title = "Dashboard", subtitle = "Track your accounts 
           <p className="mt-0.5 text-sm text-slate-600">{subtitle}</p>
         </div>
 
-        <div className="relative z-[80]">
-          <button
+        <div className="flex items-center gap-4 relative z-[80]">
+          <NotificationDropdown />
+          
+          <div className="relative">
+            <button
             type="button"
             onClick={() => setOpen((state) => !state)}
             className="flex max-w-[240px] items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm transition hover:border-teal-300 hover:bg-teal-50/40"
@@ -52,6 +56,7 @@ function DashboardTopbar({ title = "Dashboard", subtitle = "Track your accounts 
               </div>
             </div>
           ) : null}
+          </div>
         </div>
       </div>
     </header>

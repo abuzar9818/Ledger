@@ -55,12 +55,31 @@ async function userLoginController(req,res){
 
     const token=jwt.sign({userId:user._id},process.env.JWT_SECRET_KEY,{expiresIn:'3d'});
 
+    // Extract device info from User-Agent
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    
+    // Add to active sessions
+    user.activeSessions.push({
+        device: userAgent,
+        ip: req.ip,
+        token: token,
+        loginTime: new Date()
+    });
+    
+    // Limit active sessions to the most recent 5
+    if (user.activeSessions.length > 5) {
+        user.activeSessions = user.activeSessions.slice(-5);
+    }
+    
+    await user.save();
+
     await auditLogService.logAuditEvent({
         userId: user._id,
         actionType: 'LOGIN',
         metadata: {
             email: user.email,
-            ip: req.ip
+            ip: req.ip,
+            device: userAgent
         }
     });
 
@@ -70,7 +89,8 @@ async function userLoginController(req,res){
             _id:user._id,
             name:user.name,
             email:user.email,
-            role:user.role
+            role:user.role,
+            theme:user.theme
         },
         message:"User logged in successfully",
         status:"success",

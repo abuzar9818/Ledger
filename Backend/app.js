@@ -14,6 +14,7 @@ const freezeUnfreezeRoutes = require('./routes/Freeze_UnfreezeRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const accountClosureRequestRoutes = require('./routes/accountClosureRequestRoutes');
 const accountReopenRequestRoutes = require('./routes/accountReopenRequestRoutes');
+const userRoutes = require('./routes/userRoutes');
 const swaggerDocument = require('./config/swagger');
 
 const app = express();
@@ -47,6 +48,7 @@ app.use('/api', freezeUnfreezeRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/account-closure-requests', accountClosureRequestRoutes);
 app.use('/api/account-reopen-requests', accountReopenRequestRoutes);
+app.use('/api/users', userRoutes);
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "Frontend/dist")));
