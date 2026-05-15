@@ -114,6 +114,26 @@ Default local URLs:
 - It uses `VITE_API_BASE_URL`, with fallback `http://localhost:3000/api`
 - Backend CORS origin is configured in `Backend/app.js` using `FRONTEND_URL` (fallback: `http://localhost:5173`)
 
+## Frontend Updates
+
+- **Summary:** The frontend has been recently updated with multiple new and changed components across the `components`, `pages`, and `routes` areas (admin, dashboard, auth, and settings). Core stack updates include React (v19), Vite (v8), and Tailwind CSS (v3.x).
+- **Notable dependencies:** `axios`, `react-router-dom`, `framer-motion`, `recharts`, `jspdf`, `html2canvas`.
+- **Run (development):** From project root run `npm run dev` (starts backend + frontend) or run frontend only:
+
+```bash
+npm install --prefix Frontend
+npm run dev:frontend
+```
+
+- **Build / Preview (frontend):**
+
+```bash
+npm run build --prefix Frontend
+npm run preview --prefix Frontend
+```
+
+- **Notes:** If you've made specific component-level changes you'd like reflected verbatim in this README (new pages, routes, or public endpoints used by the frontend), share the list and I will insert a concise changelog here.
+
 ### API Documentation
 
 Open:
@@ -316,4 +336,6 @@ Backend/
 
 ISC
 
-Last Updated: 21 April 2026
+Last Updated: 16 May 2026
+
+**API Documentation (Swagger)**: The backend exposes interactive API docs at `/api-docs` when the server is running. If you need the raw OpenAPI JSON, fetch `/api-docs/swagger.json` or visit the UI at `http://localhost:3000/api-docs`.
