@@ -1,84 +1,109 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import DashboardLayout from "../../components/dashboard/DashboardLayout";
 import api from "../../services/api";
+import OverviewTab from "../../components/admin/OverviewTab";
+import AccountsUsersTab from "../../components/admin/AccountsUsersTab";
+import RequestsTab from "../../components/admin/RequestsTab";
+import AuditLogsTab from "../../components/admin/AuditLogsTab";
+import { RefreshCw } from "lucide-react";
 
-function AdminPage() {
-  const [pendingAccounts, setPendingAccounts] = useState([]);
+export default function AdminPage() {
+  const [activeTab, setActiveTab] = useState("overview");
   const [isLoading, setIsLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(null);
+  
+  const [users, setUsers] = useState([]);
+  const [accounts, setAccounts] = useState([]);
+  const [pendingAccounts, setPendingAccounts] = useState([]);
+  const [closureRequests, setClosureRequests] = useState([]);
+  const [reopenRequests, setReopenRequests] = useState([]);
+  const [auditLogs, setAuditLogs] = useState([]);
 
-  const fetchPendingAccounts = async () => {
+  const fetchData = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const res = await api.get('/admin/pending-accounts');
-      setPendingAccounts(res.data?.pendingAccounts || []);
+      const [
+        usersRes, accountsRes, pendingRes, closureRes, reopenRes, logsRes
+      ] = await Promise.all([
+        api.get('/admin/users'),
+        api.get('/admin/accounts'),
+        api.get('/admin/pending-accounts'),
+        api.get('/account-closure-requests/admin/close-requests'),
+        api.get('/account-reopen-requests/admin/reopen-requests'),
+        api.get('/admin/audit-logs')
+      ]);
+
+      setUsers(usersRes.data?.users || []);
+      setAccounts(accountsRes.data?.accounts || []);
+      setPendingAccounts(pendingRes.data?.pendingAccounts || []);
+      setClosureRequests(closureRes.data?.requests || []);
+      setReopenRequests(reopenRes.data?.requests || []);
+      setAuditLogs(logsRes.data?.logs || []);
+
     } catch (err) {
-      console.error(err);
+      console.error("Failed to fetch admin data", err);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPendingAccounts();
+    fetchData();
   }, []);
 
-  const handleStatusUpdate = async (accountId, status) => {
-    try {
-      setActionLoading(accountId);
-      await api.patch(`/admin/accounts/${accountId}/status`, { status });
-      await fetchPendingAccounts();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update status");
-    } finally {
-      setActionLoading(null);
-    }
-  };
+  const stats = useMemo(() => ({
+    totalUsers: users.length,
+    activeAccounts: accounts.filter(a => a.status === "ACTIVE").length,
+    pendingRequests: pendingAccounts.length + closureRequests.length + reopenRequests.length,
+    totalLogs: auditLogs.length
+  }), [users, accounts, pendingAccounts, closureRequests, reopenRequests, auditLogs]);
+
+  const tabs = [
+    { id: "overview", label: "Overview" },
+    { id: "accounts", label: "Accounts & Users" },
+    { id: "requests", label: `Requests (${stats.pendingRequests})` },
+    { id: "logs", label: "Audit Logs" }
+  ];
 
   return (
-    <DashboardLayout title="Admin Area" subtitle="Manage users and accounts.">
-      <div className="ui-surface rounded-3xl p-6">
-        <h2 className="text-xl font-bold text-slate-900 mb-6">Pending Accounts</h2>
-        
-        {isLoading ? (
-          <p className="text-sm text-slate-500">Loading accounts...</p>
-        ) : pendingAccounts.length === 0 ? (
-          <div className="p-8 text-center border border-dashed rounded-2xl border-slate-300">
-            <p className="text-sm font-medium text-slate-500">No pending accounts waiting for approval.</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {pendingAccounts.map((account) => (
-              <div key={account._id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-slate-100 bg-slate-50 gap-4">
-                <div>
-                  <p className="text-sm font-bold text-slate-900">{account.user?.name || "Unknown User"}</p>
-                  <p className="text-xs text-slate-500 mb-1">{account.user?.email || "No email"}</p>
-                  <p className="text-xs font-mono text-slate-400">Account ID: {account._id}</p>
-                </div>
-                <div className="flex gap-2 w-full sm:w-auto">
-                  <button
-                    onClick={() => handleStatusUpdate(account._id, "REJECTED")}
-                    disabled={actionLoading === account._id}
-                    className="flex-1 sm:flex-none px-4 py-2 bg-rose-100 text-rose-700 text-xs font-bold rounded-xl transition hover:bg-rose-200 disabled:opacity-50"
-                  >
-                    {actionLoading === account._id ? "Processing..." : "Reject"}
-                  </button>
-                  <button
-                    onClick={() => handleStatusUpdate(account._id, "ACTIVE")}
-                    disabled={actionLoading === account._id}
-                    className="flex-1 sm:flex-none px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl transition hover:bg-emerald-700 disabled:opacity-50"
-                  >
-                    {actionLoading === account._id ? "Processing..." : "Approve"}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+    <DashboardLayout title="Enterprise Admin" subtitle="Centralized user management and system auditing.">
+      <div className="mb-8 border-b border-slate-200">
+        <nav className="-mb-px flex space-x-6 overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === tab.id
+                  ? "border-indigo-500 text-indigo-600"
+                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
       </div>
+
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+          <RefreshCw className="animate-spin mb-4" size={32} />
+          <p className="font-medium text-sm">Loading admin datasets...</p>
+        </div>
+      ) : (
+        <>
+          {activeTab === "overview" && <OverviewTab stats={stats} />}
+          {activeTab === "accounts" && <AccountsUsersTab accounts={accounts} refreshData={fetchData} />}
+          {activeTab === "requests" && (
+            <RequestsTab 
+              pendingAccounts={pendingAccounts} 
+              closureRequests={closureRequests} 
+              reopenRequests={reopenRequests} 
+              refreshData={fetchData} 
+            />
+          )}
+          {activeTab === "logs" && <AuditLogsTab auditLogs={auditLogs} />}
+        </>
+      )}
     </DashboardLayout>
   );
 }
-
-export default AdminPage;
