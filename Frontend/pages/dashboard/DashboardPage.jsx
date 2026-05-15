@@ -367,7 +367,7 @@ export default function DashboardPage() {
                 <span className="text-sm font-bold text-slate-700 group-hover:text-amber-700">History</span>
               </Link>
               
-              <Link to="#" className="group flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-all hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-md hover:shadow-blue-900/5">
+              <Link to="/dashboard/accounts" className="group flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-all hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-md hover:shadow-blue-900/5">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">
                   <CreditCard size={20} />
                 </div>
